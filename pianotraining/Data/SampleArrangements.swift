@@ -141,11 +141,18 @@ struct SampleArrangements {
         MIDIFileParser.loadArrangement(resourceName: "sample_melody", fallbackHand: .right)
 
     /// 曲ID・難易度から演奏データを取得する。
-    /// `<曲ID>-<難易度キー>.mid` という名前のMIDIファイルが `Resources/` にあれば、
-    /// それを最優先で読み込む（本物の楽譜にもとづくデータへの切り替え用）。
+    /// `Resources/` に以下のファイルがあれば、その優先順位で読み込む（本物の楽譜への切り替え用）:
+    ///   1. `<曲ID>-<難易度キー>.musicxml`（楽譜の標準形式。右手/左手・音名・調号が正確）
+    ///   2. `<曲ID>-<難易度キー>.mid`（MIDI。手は推測、音名の区別なし）
+    /// いずれも無ければ手書きのサンプル／フォールバックを返す。
     static func arrangement(for songID: String, difficulty: Difficulty) -> Arrangement {
-        if let fromFile = MIDIFileParser.loadArrangement(resourceName: "\(songID)-\(difficulty.resourceKey)") {
-            return fromFile
+        let resourceName = "\(songID)-\(difficulty.resourceKey)"
+
+        if let fromXML = MusicXMLParser.loadArrangement(resourceName: resourceName) {
+            return fromXML
+        }
+        if let fromMIDI = MIDIFileParser.loadArrangement(resourceName: resourceName) {
+            return fromMIDI
         }
 
         switch (songID, difficulty) {
