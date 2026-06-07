@@ -1,11 +1,23 @@
 import SwiftUI
 
-// MARK: - Practice screen (placeholder — sheet music and keyboard in next step)
 struct PracticeView: View {
     let song: Song
     let difficulty: Difficulty
 
-    var difficultyColor: Color {
+    @State private var currentBeat: Double = 0
+    @State private var isPlaying = false
+
+    private var arrangement: Arrangement {
+        SampleArrangements.arrangement(for: song.id, difficulty: difficulty)
+    }
+
+    private var highlightedPitches: Set<Int> {
+        Set(arrangement.notes
+            .filter { currentBeat >= $0.startBeat && currentBeat < $0.startBeat + $0.duration }
+            .map { $0.pitch })
+    }
+
+    private var difficultyColor: Color {
         switch difficulty {
         case .superBeginner: return .green
         case .beginner:      return .blue
@@ -14,51 +26,87 @@ struct PracticeView: View {
     }
 
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
+        VStack(spacing: 16) {
+            header
 
-            Image(systemName: "pianokeys")
-                .font(.system(size: 80))
-                .foregroundStyle(.secondary)
+            SimplifiedScoreView(arrangement: arrangement, currentBeat: currentBeat)
+                .frame(height: 100)
 
-            VStack(spacing: 10) {
-                Text(song.title)
-                    .font(.title2)
-                    .fontWeight(.bold)
+            PianoKeyboardView(highlightedPitches: highlightedPitches)
+                .frame(height: 160)
+                .padding(.horizontal)
 
-                Text(song.composer)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                Text(difficulty.rawValue)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 6)
-                    .background(difficultyColor.opacity(0.15))
-                    .foregroundStyle(difficultyColor)
-                    .clipShape(Capsule())
-            }
-
-            VStack(spacing: 8) {
-                Image(systemName: "hammer.fill")
-                    .foregroundStyle(.secondary)
-                Text("楽譜・鍵盤表示は次のステップで実装します")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
+            controls
 
             Spacer()
         }
-        .padding()
+        .padding(.top, 12)
         .navigationTitle("練習")
         .navigationBarTitleDisplayMode(.inline)
+        .task(id: isPlaying) {
+            guard isPlaying else { return }
+            let beatsPerTick = 0.05 * (arrangement.bpm / 60)
+            while isPlaying && !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 50_000_000)
+                currentBeat += beatsPerTick
+                if currentBeat >= arrangement.totalBeats {
+                    currentBeat = arrangement.totalBeats
+                    isPlaying = false
+                }
+            }
+        }
+    }
+
+    private var header: some View {
+        VStack(spacing: 6) {
+            Text(song.title)
+                .font(.title2)
+                .fontWeight(.bold)
+            Text(song.composer)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Text(difficulty.rawValue)
+                .font(.caption)
+                .fontWeight(.medium)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 4)
+                .background(difficultyColor.opacity(0.15))
+                .foregroundStyle(difficultyColor)
+                .clipShape(Capsule())
+        }
+    }
+
+    private var controls: some View {
+        VStack(spacing: 12) {
+            ProgressView(value: currentBeat, total: max(arrangement.totalBeats, 0.01))
+                .tint(difficultyColor)
+                .padding(.horizontal, 32)
+
+            HStack(spacing: 28) {
+                Button {
+                    currentBeat = 0
+                    isPlaying = false
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.title2)
+                }
+
+                Button {
+                    if currentBeat >= arrangement.totalBeats { currentBeat = 0 }
+                    isPlaying.toggle()
+                } label: {
+                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                        .font(.system(size: 56))
+                        .foregroundStyle(difficultyColor)
+                }
+            }
+            .foregroundStyle(.primary)
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        PracticeView(song: SongLibrary.songs[0], difficulty: .beginner)
+        PracticeView(song: SongLibrary.songs.first(where: { $0.id == "beethoven-elise" })!, difficulty: .superBeginner)
     }
 }
