@@ -36,19 +36,40 @@ struct Arrangement {
 // MARK: - ドレミ表記への変換
 
 enum Solfege {
-    /// MIDIノート番号 → ドレミ表記（オクターブ無視）
+    private static let names =     ["ド", "ド#", "レ", "レ#", "ミ", "ファ", "ファ#", "ソ", "ソ#", "ラ", "ラ#", "シ"]
+    private static let baseNames = ["ド", "ド",  "レ", "レ",  "ミ", "ファ", "ファ",  "ソ", "ソ",  "ラ", "ラ",  "シ"]
+    /// 各ピッチクラスの「基本となる段（ダイアトニック上の位置）」。C=0, D=1, E=2, F=3, G=4, A=5, B=6
+    private static let diatonicSteps = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6]
+
+    /// MIDIノート番号 → ドレミ表記（シャープも含む。例: レ#）
     static func name(for pitch: Int) -> String {
-        let names = ["ド", "ド#", "レ", "レ#", "ミ", "ファ", "ファ#", "ソ", "ソ#", "ラ", "ラ#", "シ"]
-        return names[((pitch % 12) + 12) % 12]
+        names[pitchClass(pitch)]
+    }
+
+    /// MIDIノート番号 → ドレミの基本音名（シャープを含めない。例: レ# も「レ」）
+    /// 五線譜上では臨時記号(♯)を別表示するため、ラベルはこちらを使う
+    static func baseName(for pitch: Int) -> String {
+        baseNames[pitchClass(pitch)]
     }
 
     /// 黒鍵（シャープ系の音）かどうか
     static func isSharp(_ pitch: Int) -> Bool {
-        [1, 3, 6, 8, 10].contains(((pitch % 12) + 12) % 12)
+        [1, 3, 6, 8, 10].contains(pitchClass(pitch))
     }
 
     /// オクターブ番号（C4 = 中央ド を基準に 4）
     static func octave(for pitch: Int) -> Int {
         pitch / 12 - 1
+    }
+
+    /// 五線譜の段位置を計算するための「ダイアトニック段番号」（オクターブをまたいで連番）
+    /// 例: C4=28, D4=29, E4=30 ... 1段=半オクターブ違うと7変わる
+    static func diatonicStep(for pitch: Int) -> Int {
+        let octave = pitch / 12 - 1
+        return octave * 7 + diatonicSteps[pitchClass(pitch)]
+    }
+
+    private static func pitchClass(_ pitch: Int) -> Int {
+        ((pitch % 12) + 12) % 12
     }
 }

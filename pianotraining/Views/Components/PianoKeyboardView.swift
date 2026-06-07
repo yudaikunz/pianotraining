@@ -1,62 +1,27 @@
 import SwiftUI
 
 /// 押すべき鍵盤をハイライト表示する視覚的なピアノ鍵盤
+/// レイアウトは `KeyboardLayout` で計算し、FallingNotesView と横位置を一致させる
 struct PianoKeyboardView: View {
+    let layout: KeyboardLayout
     /// 今ハイライトしたいMIDIノート番号の集合
     let highlightedPitches: Set<Int>
-    /// 鍵盤の最低音（デフォルト: C4 = 中央ド）
-    var lowestPitch: Int = 60
-    /// 表示するオクターブ数
-    var octaveCount: Int = 2
-
-    private static let whiteOffsets = [0, 2, 4, 5, 7, 9, 11]
-    private static let blackOffsets: [(offset: Int, afterWhiteOffset: Int)] =
-        [(1, 0), (3, 2), (6, 5), (8, 7), (10, 9)]
-
-    private var whiteKeyPitches: [Int] {
-        var result: [Int] = []
-        for octave in 0..<octaveCount {
-            for offset in Self.whiteOffsets {
-                result.append(lowestPitch + octave * 12 + offset)
-            }
-        }
-        result.append(lowestPitch + octaveCount * 12) // 最後にオクターブ上のドを追加
-        return result
-    }
-
-    private var blackKeys: [(pitch: Int, whiteIndexBefore: Int)] {
-        var result: [(Int, Int)] = []
-        for octave in 0..<octaveCount {
-            for entry in Self.blackOffsets {
-                let pitch = lowestPitch + octave * 12 + entry.offset
-                guard let whiteIndex = Self.whiteOffsets.firstIndex(of: entry.afterWhiteOffset) else { continue }
-                result.append((pitch, octave * 7 + whiteIndex))
-            }
-        }
-        return result
-    }
 
     var body: some View {
-        GeometryReader { geo in
-            let whiteKeyWidth = geo.size.width / CGFloat(whiteKeyPitches.count)
-            let blackKeyWidth = whiteKeyWidth * 0.6
-            let blackKeyHeight = geo.size.height * 0.6
-
-            ZStack(alignment: .topLeading) {
-                HStack(spacing: 0) {
-                    ForEach(whiteKeyPitches, id: \.self) { pitch in
-                        WhiteKeyView(pitch: pitch, isHighlighted: highlightedPitches.contains(pitch))
-                            .frame(width: whiteKeyWidth)
-                    }
-                }
-
-                ForEach(blackKeys, id: \.pitch) { key in
-                    BlackKeyView(isHighlighted: highlightedPitches.contains(key.pitch))
-                        .frame(width: blackKeyWidth, height: blackKeyHeight)
-                        .offset(x: CGFloat(key.whiteIndexBefore + 1) * whiteKeyWidth - blackKeyWidth / 2)
+        ZStack(alignment: .topLeading) {
+            HStack(spacing: 0) {
+                ForEach(layout.whiteKeyPitches, id: \.self) { pitch in
+                    WhiteKeyView(pitch: pitch, isHighlighted: highlightedPitches.contains(pitch))
+                        .frame(width: layout.whiteKeyWidth, height: layout.keyboardHeight)
                 }
             }
+            ForEach(layout.blackKeyPitches, id: \.pitch) { key in
+                BlackKeyView(isHighlighted: highlightedPitches.contains(key.pitch))
+                    .frame(width: layout.blackKeyWidth, height: layout.blackKeyHeight)
+                    .position(x: layout.centerX(for: key.pitch), y: layout.blackKeyHeight / 2)
+            }
         }
+        .frame(width: layout.width, height: layout.keyboardHeight)
     }
 }
 
@@ -92,7 +57,9 @@ private struct BlackKeyView: View {
 }
 
 #Preview {
-    PianoKeyboardView(highlightedPitches: [60, 64, 67])
-        .frame(height: 160)
-        .padding()
+    PianoKeyboardView(
+        layout: KeyboardLayout(lowestPitch: 60, octaveCount: 2, width: 360, keyboardHeight: 150),
+        highlightedPitches: [60, 64, 67]
+    )
+    .padding()
 }
