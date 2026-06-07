@@ -13,6 +13,9 @@ struct PracticeView: View {
     @State private var mode: Mode = .read
     @State private var currentBeat: Double = 0
     @State private var isPlaying = false
+    @State private var soundingNoteIDs: Set<UUID> = []
+
+    private let soundEngine = PianoSoundEngine()
 
     private var arrangement: Arrangement {
         SampleArrangements.arrangement(for: song.id, difficulty: difficulty)
@@ -20,6 +23,20 @@ struct PracticeView: View {
 
     private var hasLeftHandPart: Bool {
         arrangement.notes.contains { $0.hand == .left }
+    }
+
+    /// 鍵盤の表示範囲（最低音・オクターブ数）をアレンジに含まれる音域から自動計算する。
+    /// 片手のみの曲は2オクターブ程度、両手の曲は低音側に伴奏が広がるため
+    /// それに合わせて鍵盤も広く表示し、落ちてくる音符と常に一致するようにする。
+    private var keyboardRange: (lowestPitch: Int, octaveCount: Int) {
+        let pitches = arrangement.notes.map(\.pitch)
+        guard let minPitch = pitches.min(), let maxPitch = pitches.max() else {
+            return (60, 2)
+        }
+        let lowestC = (minPitch / 12) * 12
+        let highestC = (maxPitch / 12 + 1) * 12
+        let octaveCount = max(2, (highestC - lowestC) / 12)
+        return (lowestC, octaveCount)
     }
 
     private var highlightedPitches: Set<Int> {
@@ -64,7 +81,10 @@ struct PracticeView: View {
             if newMode == .read { isPlaying = false }
         }
         .task(id: isPlaying) {
-            guard isPlaying else { return }
+            guard isPlaying else {
+                stopAllSound()
+                return
+            }
             let beatsPerTick = 0.05 * (arrangement.bpm / 60)
             while isPlaying && !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 50_000_000)
@@ -73,8 +93,34 @@ struct PracticeView: View {
                     currentBeat = arrangement.totalBeats
                     isPlaying = false
                 }
+                updateSound(for: currentBeat)
             }
         }
+    }
+
+    // MARK: - 音声再生
+
+    /// 現在の拍位置に応じて、鳴らすべき音を発音し、終わった音を消音する。
+    /// 同じ高さの音が連続/重複する場合に誤って消音しないよう、消音前に他の発音中の音と高さが被っていないか確認する。
+    private func updateSound(for beat: Double) {
+        let activeNotes = arrangement.notes.filter { beat >= $0.startBeat && beat < $0.startBeat + $0.duration }
+        let activeIDs = Set(activeNotes.map(\.id))
+        let activePitches = Set(activeNotes.map(\.pitch))
+
+        for note in activeNotes where !soundingNoteIDs.contains(note.id) {
+            soundEngine.noteOn(pitch: note.pitch)
+        }
+        for note in arrangement.notes where soundingNoteIDs.contains(note.id) && !activeIDs.contains(note.id) {
+            if !activePitches.contains(note.pitch) {
+                soundEngine.noteOff(pitch: note.pitch)
+            }
+        }
+        soundingNoteIDs = activeIDs
+    }
+
+    private func stopAllSound() {
+        soundEngine.stopAllNotes()
+        soundingNoteIDs = []
     }
 
     // MARK: - 共通ヘッダー
@@ -139,16 +185,23 @@ struct PracticeView: View {
     private var playModeContent: some View {
         VStack(spacing: 16) {
             GeometryReader { geo in
+                let range = keyboardRange
+                let whiteKeyCount = range.octaveCount * 7 + 1
+                let minWhiteKeyWidth: CGFloat = 34
+                let keyboardWidth = max(geo.size.width, CGFloat(whiteKeyCount) * minWhiteKeyWidth)
                 let layout = KeyboardLayout(
-                    lowestPitch: 60,
-                    octaveCount: 2,
-                    width: geo.size.width,
+                    lowestPitch: range.lowestPitch,
+                    octaveCount: range.octaveCount,
+                    width: keyboardWidth,
                     keyboardHeight: 130
                 )
-                VStack(spacing: 6) {
-                    FallingNotesView(arrangement: arrangement, currentBeat: currentBeat, layout: layout)
-                        .frame(height: 190)
-                    PianoKeyboardView(layout: layout, highlightedPitches: highlightedPitches)
+                // 両手の曲は鍵盤の音域が広くなるため、画面幅に収まらない場合は横スクロールできるようにする
+                ScrollView(.horizontal, showsIndicators: false) {
+                    VStack(spacing: 6) {
+                        FallingNotesView(arrangement: arrangement, currentBeat: currentBeat, layout: layout)
+                            .frame(width: keyboardWidth, height: 190)
+                        PianoKeyboardView(layout: layout, highlightedPitches: highlightedPitches)
+                    }
                 }
             }
             .frame(height: 332)
@@ -170,6 +223,7 @@ struct PracticeView: View {
                 Button {
                     currentBeat = 0
                     isPlaying = false
+                    stopAllSound()
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.title2)

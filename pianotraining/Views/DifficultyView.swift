@@ -88,39 +88,49 @@ struct DifficultyCard: View {
         }
     }
 
+    private var profile: DifficultyProfile { difficulty.profile }
+
     var body: some View {
-        HStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.12))
-                    .frame(width: 52, height: 52)
-                Image(systemName: iconName)
-                    .font(.system(size: 26))
-                    .foregroundStyle(color)
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(difficulty.rawValue)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                Text(difficulty.detail)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            HStack(spacing: 3) {
-                ForEach(0..<3) { i in
-                    Image(systemName: "star.fill")
-                        .font(.caption)
-                        .foregroundStyle(i < difficulty.starCount ? color : Color(.systemGray4))
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.12))
+                        .frame(width: 52, height: 52)
+                    Image(systemName: iconName)
+                        .font(.system(size: 26))
+                        .foregroundStyle(color)
                 }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(difficulty.rawValue)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(difficulty.detail)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                HStack(spacing: 3) {
+                    ForEach(0..<3) { i in
+                        Image(systemName: "star.fill")
+                            .font(.caption)
+                            .foregroundStyle(i < difficulty.starCount ? color : Color(.systemGray4))
+                    }
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(Color(.systemGray3))
             }
 
-            Image(systemName: "chevron.right")
+            profileBadges
+
+            Text(profile.summary)
                 .font(.caption)
-                .foregroundStyle(Color(.systemGray3))
+                .foregroundStyle(.secondary)
         }
         .padding(16)
         .background(Color(.secondarySystemBackground))
@@ -129,6 +139,28 @@ struct DifficultyCard: View {
             RoundedRectangle(cornerRadius: 14)
                 .stroke(color.opacity(0.25), lineWidth: 1)
         )
+    }
+
+    /// アレンジの特徴を一目で比較できるよう、固定プロファイルの要点をバッジで並べる
+    private var profileBadges: some View {
+        HStack(spacing: 6) {
+            badge(profile.handInvolvement)
+            badge(profile.chordComplexity)
+            badge(profile.keyComplexity)
+            badge(profile.tempoRange)
+        }
+    }
+
+    private func badge(_ text: String) -> some View {
+        Text(text)
+            .font(.caption2)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(color.opacity(0.1))
+            .foregroundStyle(color)
+            .clipShape(Capsule())
     }
 }
 

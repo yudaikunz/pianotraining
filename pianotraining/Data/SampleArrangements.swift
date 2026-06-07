@@ -2,11 +2,15 @@ import Foundation
 
 /// 演奏データの取得窓口。
 ///
-/// 本来は「曲 × 難易度」ごとにアレンジ済みのMIDIファイルをアプリに内蔵し、
-/// `MIDIFileParser` で読み込む想定。まだ全曲分のMIDIが揃っていないため、
-/// 現段階では以下の優先順位でデータを返す:
-///   1. 手書きのサンプルアレンジ（実際の楽曲フレーズを採用）
-///   2. バンドル済みMIDIファイルから読み込んだデータ（MIDI読み込みのデモ用）
+/// 「曲 × 難易度」ごとにアレンジ済みのMIDIファイルをアプリに内蔵し、`MIDIFileParser` で
+/// 読み込むのが正式な方式。`Resources/` に
+///   `<曲ID>-<難易度キー>.mid`  例: `beethoven-elise-beginner.mid`
+/// という名前でMIDIファイルを追加すると、`arrangement(for:difficulty:)` が自動的にそれを
+/// 読み込んで使用する（`Difficulty.resourceKey` が難易度キーを定義している）。
+///
+/// 該当するMIDIファイルがまだ無い曲・難易度については、以下の優先順位でフォールバックする:
+///   1. バンドル済みMIDIファイル（命名規則に沿ったもの）から読み込んだデータ
+///   2. 手書きのサンプルアレンジ（実際の楽曲フレーズを採用したプレースホルダー）
 ///   3. それも無ければ簡単な音階のフォールバック
 struct SampleArrangements {
 
@@ -86,10 +90,16 @@ struct SampleArrangements {
     /// MIDIファイル読み込みのデモ用。`Resources/sample_melody.mid` を実際にパースして使う。
     /// （きらきら星のメロディ。専用アレンジが用意されるまでの仮データ）
     private static let midiDemoArrangement: Arrangement? =
-        MIDIFileParser.loadArrangement(resourceName: "sample_melody")
+        MIDIFileParser.loadArrangement(resourceName: "sample_melody", fallbackHand: .right)
 
-    /// 曲ID・難易度から演奏データを取得する
+    /// 曲ID・難易度から演奏データを取得する。
+    /// `<曲ID>-<難易度キー>.mid` という名前のMIDIファイルが `Resources/` にあれば、
+    /// それを最優先で読み込む（本物の楽譜にもとづくデータへの切り替え用）。
     static func arrangement(for songID: String, difficulty: Difficulty) -> Arrangement {
+        if let fromFile = MIDIFileParser.loadArrangement(resourceName: "\(songID)-\(difficulty.resourceKey)") {
+            return fromFile
+        }
+
         switch (songID, difficulty) {
         case ("beethoven-elise", .superBeginner):
             return furEliseOpening
