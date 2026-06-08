@@ -7,7 +7,10 @@ struct StaffNotationView: View {
     let arrangement: Arrangement
 
     private let lineSpacing: CGFloat = 12
-    private let noteSpacing: CGFloat = 54
+    /// 1拍あたりの横幅。音符の「拍位置」をそのまま横軸に対応させることで、
+    /// 同時に鳴る音符（和音・両手の合わせ）が縦に揃って見えるようにする。
+    private let beatWidth: CGFloat = 34
+    private let leadingPadding: CGFloat = 30
     private let noteWidth: CGFloat = 13
     private let noteHeight: CGFloat = 11
 
@@ -20,7 +23,7 @@ struct StaffNotationView: View {
     private var bassTopY: CGFloat { trebleBottomY + lineSpacing * 5 }
     private var bassBottomY: CGFloat { bassTopY + lineSpacing * 4 }
     private var contentHeight: CGFloat { bassBottomY + 34 }
-    private var contentWidth: CGFloat { CGFloat(max(arrangement.notes.count, 1)) * noteSpacing + 50 }
+    private var contentWidth: CGFloat { CGFloat(arrangement.totalBeats) * beatWidth + leadingPadding + 50 }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -31,8 +34,8 @@ struct StaffNotationView: View {
                     staffLines(topY: bassTopY)
                     middleCGuide
 
-                    ForEach(Array(arrangement.notes.enumerated()), id: \.element.id) { index, note in
-                        noteView(for: note, x: CGFloat(index) * noteSpacing + 30)
+                    ForEach(arrangement.notes) { note in
+                        noteView(for: note, x: CGFloat(note.startBeat) * beatWidth + leadingPadding)
                     }
                 }
                 .frame(width: contentWidth, height: contentHeight, alignment: .topLeading)
