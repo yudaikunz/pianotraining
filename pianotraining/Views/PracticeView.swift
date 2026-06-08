@@ -3,6 +3,11 @@ import SwiftUI
 struct PracticeView: View {
     let song: Song
     let difficulty: Difficulty
+    /// 曲＋難易度から一度だけ読み込む演奏データ。
+    /// 計算プロパティにすると body の再評価のたびにMusicXMLを再パースしてしまい、
+    /// `PlayedNote.id`（UUID）が毎回変わって、落ちてくる音符と楽譜の表示が
+    /// ちぐはぐに見える・発音管理がずれる原因になるため、初期化時に一度だけ確定する。
+    let arrangement: Arrangement
 
     private enum Mode: String, CaseIterable, Identifiable {
         case read = "楽譜を読む"
@@ -17,8 +22,10 @@ struct PracticeView: View {
 
     private let soundEngine = PianoSoundEngine()
 
-    private var arrangement: Arrangement {
-        SampleArrangements.arrangement(for: song.id, difficulty: difficulty)
+    init(song: Song, difficulty: Difficulty) {
+        self.song = song
+        self.difficulty = difficulty
+        self.arrangement = SampleArrangements.arrangement(for: song.id, difficulty: difficulty)
     }
 
     private var hasLeftHandPart: Bool {
