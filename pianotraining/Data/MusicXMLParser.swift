@@ -7,17 +7,24 @@ import Foundation
 ///   - `<step>` `<alter>` `<octave>` で正しい音名（シャープ/フラット/ナチュラルの区別）が分かる
 ///   - `<divisions>` を基準に小節・拍・音価が正確に表現される
 ///
-/// 本実装は score-partwise 形式の非圧縮 MusicXML（.musicxml / .xml）に対応する。
-/// 圧縮形式（.mxl）はZIP展開が必要なため現時点では未対応。
+/// 本実装は score-partwise 形式の MusicXML に対応する。
+/// 非圧縮（.musicxml / .xml）に加え、圧縮形式（.mxl）も `MXLArchive` で展開して読み込む。
 struct MusicXMLParser {
 
     /// アプリにバンドルされたMusicXMLファイルを読み込んで演奏データに変換する。
-    /// `.musicxml` を優先し、無ければ `.xml` を探す。
+    /// `.musicxml` / `.xml`（非圧縮）を優先し、無ければ `.mxl`（ZIP圧縮）を展開して読む。
     static func loadArrangement(resourceName: String) -> Arrangement? {
-        let url = Bundle.main.url(forResource: resourceName, withExtension: "musicxml")
-            ?? Bundle.main.url(forResource: resourceName, withExtension: "xml")
-        guard let url, let data = try? Data(contentsOf: url) else { return nil }
-        return parse(data: data)
+        if let url = Bundle.main.url(forResource: resourceName, withExtension: "musicxml")
+            ?? Bundle.main.url(forResource: resourceName, withExtension: "xml"),
+           let data = try? Data(contentsOf: url) {
+            return parse(data: data)
+        }
+        if let url = Bundle.main.url(forResource: resourceName, withExtension: "mxl"),
+           let zipped = try? Data(contentsOf: url),
+           let data = MXLArchive.extractScoreXML(from: zipped) {
+            return parse(data: data)
+        }
+        return nil
     }
 
     static func parse(data: Data) -> Arrangement? {
@@ -36,6 +43,8 @@ struct MusicXMLParser {
 private final class MusicXMLParserDelegate: NSObject, XMLParserDelegate {
     private(set) var notes: [PlayedNote] = []
     private(set) var bpm: Double = 120
+    // Arrangementは単一テンポなので、曲中の速度変化（rit.等）は無視し最初の指定だけを採用する
+    private var bpmLocked = false
 
     // 楽譜全体の進行状態
     private var divisions = 1          // 4分音符あたりの分解能
@@ -89,7 +98,7 @@ private final class MusicXMLParserDelegate: NSObject, XMLParserDelegate {
             forwardDuration = 0
         case "sound":
             if let tempo = attributeDict["tempo"], let value = Double(tempo) {
-                bpm = value
+                setInitialTempo(value)
             }
         default:
             break
@@ -129,12 +138,19 @@ private final class MusicXMLParserDelegate: NSObject, XMLParserDelegate {
         case "forward":
             position += forwardDuration
         case "per-minute":
-            if let value = Double(text) { bpm = value }
+            if let value = Double(text) { setInitialTempo(value) }
         default:
             break
         }
 
         buffer = ""
+    }
+
+    /// 最初に出てきたテンポ指定だけを採用する（以降の rit. / accel. 等は無視）
+    private func setInitialTempo(_ value: Double) {
+        guard !bpmLocked, value > 0 else { return }
+        bpm = value
+        bpmLocked = true
     }
 
     /// 1つの <note> を読み終えたタイミングで、音符を確定して時間位置を進める
