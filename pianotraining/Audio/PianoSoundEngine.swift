@@ -11,6 +11,10 @@ final class PianoSoundEngine {
         configureAudioSession()
         engine.attach(sampler)
         engine.connect(sampler, to: engine.mainMixerNode, format: nil)
+        // 和音や両手パートで複数の音が同時に重なると、各ボイスの音量が単純に
+        // 加算されて出力上限（0dBFS）を超え、音割れ（クリッピング）が起きる。
+        // 出力にヘッドルームを持たせて、重なっても歪まないようにする。
+        engine.mainMixerNode.outputVolume = 0.6
         loadPianoSound()
     }
 
@@ -38,7 +42,7 @@ final class PianoSoundEngine {
         }
     }
 
-    func noteOn(pitch: Int, velocity: UInt8 = 90) {
+    func noteOn(pitch: Int, velocity: UInt8 = 75) {
         guard isReady, let note = midiNote(from: pitch) else { return }
         sampler.startNote(note, withVelocity: velocity, onChannel: 0)
     }
