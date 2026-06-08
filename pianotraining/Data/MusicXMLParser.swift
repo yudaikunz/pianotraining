@@ -35,7 +35,7 @@ struct MusicXMLParser {
 
         let notes = delegate.notes.sorted { $0.startBeat < $1.startBeat }
         guard !notes.isEmpty else { return nil }
-        return Arrangement(notes: notes, bpm: delegate.bpm)
+        return Arrangement(notes: notes, bpm: delegate.bpm, beatsPerMeasure: delegate.beatsPerMeasure)
     }
 }
 
@@ -43,8 +43,13 @@ struct MusicXMLParser {
 private final class MusicXMLParserDelegate: NSObject, XMLParserDelegate {
     private(set) var notes: [PlayedNote] = []
     private(set) var bpm: Double = 120
-    // Arrangementは単一テンポなので、曲中の速度変化（rit.等）は無視し最初の指定だけを採用する
+    /// 1小節分の長さ（4分音符換算の拍数。例: 3/4なら3.0、3/8なら1.5）
+    private(set) var beatsPerMeasure: Double = 4
+    // Arrangementは単一テンポ・単一拍子として扱うため、最初に出てきた値だけを採用する
     private var bpmLocked = false
+    private var timeSignatureLocked = false
+    private var timeBeats: Int?
+    private var timeBeatType: Int?
 
     // 楽譜全体の進行状態
     private var divisions = 1          // 4分音符あたりの分解能
@@ -122,6 +127,17 @@ private final class MusicXMLParserDelegate: NSObject, XMLParserDelegate {
             alter = Int(text) ?? 0
         case "octave":
             octave = Int(text)
+        case "beats":
+            if !timeSignatureLocked { timeBeats = Int(text) }
+        case "beat-type":
+            if !timeSignatureLocked { timeBeatType = Int(text) }
+        case "time":
+            if !timeSignatureLocked, let beats = timeBeats, let beatType = timeBeatType,
+               beats > 0, beatType > 0 {
+                // 4分音符を1拍として換算した1小節分の長さ（例: 3/8拍子 → 3 × 4/8 = 1.5）
+                beatsPerMeasure = Double(beats) * 4.0 / Double(beatType)
+                timeSignatureLocked = true
+            }
         case "staff":
             staff = Int(text) ?? 1
         case "duration":

@@ -27,6 +27,15 @@ struct Arrangement {
     let notes: [PlayedNote]
     /// テンポ（1分間の拍数）
     let bpm: Double
+    /// 1小節分の長さ（4分音符＝1拍として換算した拍数）。楽譜の小節線の表示に使う。
+    /// 例: 3/4拍子なら3.0、3/8拍子なら1.5（4分音符換算で1拍半）
+    let beatsPerMeasure: Double
+
+    init(notes: [PlayedNote], bpm: Double, beatsPerMeasure: Double = 4) {
+        self.notes = notes
+        self.bpm = bpm
+        self.beatsPerMeasure = beatsPerMeasure > 0 ? beatsPerMeasure : 4
+    }
 
     var totalBeats: Double {
         notes.map { $0.startBeat + $0.duration }.max() ?? 0

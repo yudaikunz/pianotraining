@@ -9,13 +9,6 @@ struct PracticeView: View {
     /// ちぐはぐに見える・発音管理がずれる原因になるため、初期化時に一度だけ確定する。
     let arrangement: Arrangement
 
-    private enum Mode: String, CaseIterable, Identifiable {
-        case read = "楽譜を読む"
-        case play = "弾いてみる"
-        var id: String { rawValue }
-    }
-
-    @State private var mode: Mode = .read
     @State private var currentBeat: Double = 0
     @State private var isPlaying = false
     @State private var soundingNoteIDs: Set<UUID> = []
@@ -61,32 +54,34 @@ struct PracticeView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
-            header
+        GeometryReader { geo in
+            // 画面の向き（横長かどうか）に応じて、各パーツの高さ配分を変える。
+            // 縦・横どちらでも、楽譜と鍵盤＋ウォーターフォールを同時に、
+            // スクロールなしで鍵盤全体が収まるように調整する。
+            let isLandscape = geo.size.width > geo.size.height
+            let keyboardWidth = max(geo.size.width - 32, 200)
 
-            Picker("表示モード", selection: $mode) {
-                ForEach(Mode.allCases) { mode in
-                    Text(mode.rawValue).tag(mode)
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: isLandscape ? 10 : 16) {
+                    header
+
+                    StaffNotationView(arrangement: arrangement)
+                        .frame(height: isLandscape ? 168 : 224)
+                        .padding(.horizontal)
+
+                    practiceArea(keyboardWidth: keyboardWidth, isLandscape: isLandscape)
+
+                    handLegend
+
+                    controls
                 }
+                .padding(.top, 12)
+                .padding(.bottom, 24)
+                .frame(minHeight: geo.size.height, alignment: .top)
             }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-
-            switch mode {
-            case .read:
-                readModeContent
-            case .play:
-                playModeContent
-            }
-
-            Spacer()
         }
-        .padding(.top, 12)
         .navigationTitle("練習")
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: mode) { _, newMode in
-            if newMode == .read { isPlaying = false }
-        }
         .task(id: isPlaying) {
             guard isPlaying else {
                 stopAllSound()
@@ -151,24 +146,6 @@ struct PracticeView: View {
         }
     }
 
-    // MARK: - 「楽譜を読む」モード
-
-    private var readModeContent: some View {
-        VStack(spacing: 12) {
-            StaffNotationView(arrangement: arrangement)
-                .frame(height: 250)
-                .padding(.horizontal)
-
-            handLegend
-
-            Text("指でなぞりながら、音符の下のドレミを声に出して読んでみましょう。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 36)
-        }
-    }
-
     private var handLegend: some View {
         HStack(spacing: 20) {
             legendItem(color: .blue, label: "右手（ト音記号）")
@@ -187,38 +164,29 @@ struct PracticeView: View {
         }
     }
 
-    // MARK: - 「弾いてみる」モード
+    // MARK: - 鍵盤＋ウォーターフォール（楽譜と同時に表示する）
 
-    private var playModeContent: some View {
-        VStack(spacing: 16) {
-            GeometryReader { geo in
-                let range = keyboardRange
-                let whiteKeyCount = range.octaveCount * 7 + 1
-                let minWhiteKeyWidth: CGFloat = 34
-                let keyboardWidth = max(geo.size.width, CGFloat(whiteKeyCount) * minWhiteKeyWidth)
-                let layout = KeyboardLayout(
-                    lowestPitch: range.lowestPitch,
-                    octaveCount: range.octaveCount,
-                    width: keyboardWidth,
-                    keyboardHeight: 130
-                )
-                // 両手の曲は鍵盤の音域が広くなるため、画面幅に収まらない場合は横スクロールできるようにする
-                ScrollView(.horizontal, showsIndicators: false) {
-                    VStack(spacing: 6) {
-                        FallingNotesView(arrangement: arrangement, currentBeat: currentBeat, layout: layout)
-                            .frame(width: keyboardWidth, height: 190)
-                        PianoKeyboardView(layout: layout, highlightedPitches: highlightedPitches)
-                    }
-                }
-            }
-            .frame(height: 332)
-            .padding(.horizontal)
+    /// 鍵盤は画面幅に収まるように常にリサイズし、横スクロールさせない。
+    /// 落ちてくる音符（ウォーターフォール）は、その鍵盤と横位置がぴったり揃う。
+    private func practiceArea(keyboardWidth: CGFloat, isLandscape: Bool) -> some View {
+        let range = keyboardRange
+        let layout = KeyboardLayout(
+            lowestPitch: range.lowestPitch,
+            octaveCount: range.octaveCount,
+            width: keyboardWidth,
+            keyboardHeight: isLandscape ? 104 : 128
+        )
 
-            handLegend
-
-            controls
+        return VStack(spacing: 6) {
+            FallingNotesView(arrangement: arrangement, currentBeat: currentBeat, layout: layout)
+                .frame(width: keyboardWidth, height: isLandscape ? 120 : 168)
+            PianoKeyboardView(layout: layout, highlightedPitches: highlightedPitches)
         }
+        .frame(width: keyboardWidth)
+        .padding(.horizontal, 16)
     }
+
+    // MARK: - 再生コントロール
 
     private var controls: some View {
         VStack(spacing: 12) {

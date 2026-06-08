@@ -83,43 +83,25 @@ struct SampleArrangements {
 
     // MARK: - メヌエット ト長調（バッハ／ペツォールト, BWV Anh.114）第1部（8小節分のフレーズ2つ）
 
-    /// 超初心者向け：右手のメロディのみ（前半フレーズ＋後半フレーズで主音に着地するまで）
-    static let minuetGOpening = Arrangement(
-        notes: [
-            PlayedNote(pitch: 74, startBeat: 0.0,  duration: 1.0, hand: .right), // レ (D5)
-            PlayedNote(pitch: 67, startBeat: 1.0,  duration: 1.0, hand: .right), // ソ (G4)
-            PlayedNote(pitch: 69, startBeat: 2.0,  duration: 1.0, hand: .right), // ラ (A4)
-            PlayedNote(pitch: 71, startBeat: 3.0,  duration: 1.0, hand: .right), // シ (B4)
-            PlayedNote(pitch: 72, startBeat: 4.0,  duration: 1.0, hand: .right), // ド (C5)
-            PlayedNote(pitch: 74, startBeat: 5.0,  duration: 1.0, hand: .right), // レ (D5)
-            PlayedNote(pitch: 67, startBeat: 6.0,  duration: 1.0, hand: .right), // ソ (G4)
-            PlayedNote(pitch: 67, startBeat: 7.0,  duration: 2.0, hand: .right), // ソ (G4)
-            PlayedNote(pitch: 71, startBeat: 9.0,  duration: 1.0, hand: .right), // シ (B4)
-            PlayedNote(pitch: 69, startBeat: 10.0, duration: 1.0, hand: .right), // ラ (A4)
-            PlayedNote(pitch: 67, startBeat: 11.0, duration: 1.0, hand: .right), // ソ (G4)
-            PlayedNote(pitch: 66, startBeat: 12.0, duration: 1.0, hand: .right), // ファ#(F#4)
-            PlayedNote(pitch: 67, startBeat: 13.0, duration: 1.0, hand: .right), // ソ (G4)
-            PlayedNote(pitch: 69, startBeat: 14.0, duration: 1.0, hand: .right), // ラ (A4)
-            PlayedNote(pitch: 71, startBeat: 15.0, duration: 1.0, hand: .right), // シ (B4)
-            PlayedNote(pitch: 67, startBeat: 16.0, duration: 2.0, hand: .right), // ソ (G4)
-        ],
-        bpm: 110
-    )
 
-    /// 初心者・中級向け：右手のメロディ（前半＋後半フレーズ）＋左手の伴奏（ト長調の持続和音）
-    static let minuetGTwoHands = Arrangement(
-        notes: minuetGOpening.notes + [
-            PlayedNote(pitch: 43, startBeat: 0.0,  duration: 4.5, hand: .left), // ソ (G2)
-            PlayedNote(pitch: 50, startBeat: 0.0,  duration: 4.5, hand: .left), // レ (D3)
-            PlayedNote(pitch: 43, startBeat: 4.5,  duration: 4.5, hand: .left), // ソ (G2)
-            PlayedNote(pitch: 50, startBeat: 4.5,  duration: 4.5, hand: .left), // レ (D3)
-            PlayedNote(pitch: 38, startBeat: 9.0,  duration: 4.5, hand: .left), // レ (D2)
-            PlayedNote(pitch: 50, startBeat: 9.0,  duration: 4.5, hand: .left), // レ (D3)
-            PlayedNote(pitch: 43, startBeat: 13.5, duration: 4.5, hand: .left), // ソ (G2)
-            PlayedNote(pitch: 50, startBeat: 13.5, duration: 4.5, hand: .left), // レ (D3)
-        ],
-        bpm: 110
-    )
+    // MARK: - メヌエット ト長調：本物の楽譜（中級）から難易度別バリエーションを導出
+
+    /// 中級用に内蔵した本物の楽譜データを基に、初級・超初心者向けの簡易版を作る。
+    /// プレースホルダーに頼らず「実際の曲」を難易度に応じて弾きやすく調整する:
+    ///   - 超初心者: 右手の旋律のみを抜き出し、ゆっくりのテンポで
+    ///   - 初級: 両手のまま、少しゆっくりのテンポで
+    ///   - 中級: 原曲そのまま
+    private static func simplifiedMinuet(from full: Arrangement, for difficulty: Difficulty) -> Arrangement {
+        switch difficulty {
+        case .superBeginner:
+            let melody = full.notes.filter { $0.hand == .right }
+            return Arrangement(notes: melody, bpm: full.bpm * 0.75, beatsPerMeasure: full.beatsPerMeasure)
+        case .beginner:
+            return Arrangement(notes: full.notes, bpm: full.bpm * 0.88, beatsPerMeasure: full.beatsPerMeasure)
+        case .intermediate:
+            return full
+        }
+    }
 
     // MARK: - フォールバック
 
@@ -155,16 +137,19 @@ struct SampleArrangements {
             return fromMIDI
         }
 
+        // メヌエット ト長調は中級用に本物の楽譜（全32小節）を内蔵済み。
+        // 専用ファイルが無い初級・超初心者向けは、それを基に簡略化して提供する
+        // （プレースホルダーではなく、実際の楽曲データを使う）。
+        if songID == "bach-minuet-g",
+           let full = MusicXMLParser.loadArrangement(resourceName: "bach-minuet-g-intermediate") {
+            return simplifiedMinuet(from: full, for: difficulty)
+        }
+
         switch (songID, difficulty) {
         case ("beethoven-elise", .superBeginner):
             return furEliseOpening
         case ("beethoven-elise", _):
             return furEliseTwoHands
-
-        case ("bach-minuet-g", .superBeginner):
-            return minuetGOpening
-        case ("bach-minuet-g", _):
-            return minuetGTwoHands
 
         default:
             return midiDemoArrangement ?? scaleFallback
