@@ -1,23 +1,30 @@
 import SwiftUI
 
+private struct ChordInfo {
+    let size: Int
+    let xOffset: CGFloat
+}
+
 /// 大譜表（ト音記号＝右手 / ヘ音記号＝左手）でドレミ併記の楽譜を表示する。
-/// FallingNotesView と同様に currentBeat から直接座標を計算する方式を採用し、
-/// ScrollView は使わない。現在の拍位置が常に中央のカーソル線と一致する。
+/// currentBeat から直接 x 座標を計算し、FallingNotesView と同期して動く。
+/// 停止中はドラッグで currentBeat をスクロールできる（onBeatDragged 経由）。
 struct StaffNotationView: View {
     let arrangement: Arrangement
     var currentBeat: Double = 0
+    var isPlaying: Bool = false
+    var onBeatDragged: ((Double) -> Void)? = nil
+
+    @State private var dragStartBeat: Double? = nil
 
     private let lineSpacing: CGFloat = 12
-    /// 1拍あたりの横幅。FallingNotesView は縦方向に同じ比率を使う。
     private let beatWidth: CGFloat = 34
     private let noteWidth: CGFloat = 13
     private let noteHeight: CGFloat = 10
     private let stemLength: CGFloat = 30
-    /// 音部記号列の幅（左端に固定表示）
     private let clefAreaWidth: CGFloat = 56
 
-    private let trebleBottomPitch = 64 // E4: ト音記号の最下線
-    private let bassBottomPitch = 43   // G2: ヘ音記号の最下線
+    private let trebleBottomPitch = 64
+    private let bassBottomPitch = 43
     private let middleLineStep = 4
 
     private var trebleTopY: CGFloat { 16 }
@@ -32,20 +39,47 @@ struct StaffNotationView: View {
             .map(\.id))
     }
 
+    /// 同じ拍・同じ手の音符を「和音」としてグループ化し、各音符の
+    /// コード内音符数とx軸オフセットを返す。
+    /// 隣接音（ダイアトニック段差 ≤1）は左右交互に配置して重なりを解消する。
+    private var chordInfos: [UUID: ChordInfo] {
+        struct Key: Hashable { let beat: Double; let hand: Hand }
+        var result: [UUID: ChordInfo] = [:]
+        let adjacentOffset: CGFloat = noteWidth + 2
+
+        let grouped = Dictionary(grouping: arrangement.notes) {
+            Key(beat: $0.startBeat, hand: $0.hand)
+        }
+        for (_, chord) in grouped {
+            let sorted = chord.sorted { $0.pitch < $1.pitch }
+            let size = sorted.count
+            var lastOffset: CGFloat = 0
+            for (i, note) in sorted.enumerated() {
+                if i > 0 {
+                    let prevStep = Solfege.diatonicStep(for: sorted[i - 1].pitch)
+                    let currStep = Solfege.diatonicStep(for: note.pitch)
+                    lastOffset = abs(currStep - prevStep) <= 1
+                        ? (lastOffset == 0 ? adjacentOffset : 0)
+                        : 0
+                }
+                result[note.id] = ChordInfo(size: size, xOffset: lastOffset)
+            }
+        }
+        return result
+    }
+
     var body: some View {
         GeometryReader { geo in
             let notesAreaWidth = max(geo.size.width - clefAreaWidth, 100)
-            // 再生カーソルは常にノートエリアの中央に固定
             let centerX = notesAreaWidth / 2
+            let infos = chordInfos
 
             HStack(spacing: 0) {
-                // 音部記号：スクロールせず左端に固定
                 clefs
                     .frame(width: clefAreaWidth, height: contentHeight)
                     .background(Color(.systemBackground))
                     .zIndex(1)
 
-                // 音符・五線：currentBeat 基準で位置を計算し .clipped() で切り抜く
                 ZStack(alignment: .topLeading) {
                     staffLines(topY: trebleTopY, width: notesAreaWidth)
                     staffLines(topY: bassTopY, width: notesAreaWidth)
@@ -53,19 +87,37 @@ struct StaffNotationView: View {
                     barLines(centerX: centerX, areaWidth: notesAreaWidth)
 
                     ForEach(visibleNotes(centerX: centerX, areaWidth: notesAreaWidth)) { note in
-                        let x = CGFloat(note.startBeat - currentBeat) * beatWidth + centerX
-                        noteView(for: note, x: x, isActive: activeNoteIDs.contains(note.id))
+                        let baseX = CGFloat(note.startBeat - currentBeat) * beatWidth + centerX
+                        let info = infos[note.id] ?? ChordInfo(size: 1, xOffset: 0)
+                        noteView(
+                            for: note,
+                            x: baseX + info.xOffset,
+                            isActive: activeNoteIDs.contains(note.id),
+                            chordSize: info.size
+                        )
                     }
 
                     playheadCursor(at: centerX)
                 }
                 .frame(width: notesAreaWidth, height: contentHeight)
                 .clipped()
+                // 停止中のみドラッグで currentBeat をスクロール
+                .gesture(
+                    isPlaying ? nil : DragGesture(minimumDistance: 4)
+                        .onChanged { value in
+                            if dragStartBeat == nil { dragStartBeat = currentBeat }
+                            let delta = -Double(value.translation.width) / Double(beatWidth)
+                            let newBeat = max(0, min((dragStartBeat ?? currentBeat) + delta,
+                                                     arrangement.totalBeats))
+                            onBeatDragged?(newBeat)
+                        }
+                        .onEnded { _ in dragStartBeat = nil }
+                )
             }
         }
     }
 
-    // MARK: - 再生カーソル（常に中央に固定）
+    // MARK: - 再生カーソル
 
     private func playheadCursor(at x: CGFloat) -> some View {
         Rectangle()
@@ -108,7 +160,6 @@ struct StaffNotationView: View {
         }
     }
 
-    /// 小節線：各小節の拍位置を currentBeat との差から x 座標を計算して描く。
     private func barLines(centerX: CGFloat, areaWidth: CGFloat) -> some View {
         let measureCount = max(Int(ceil(arrangement.totalBeats / arrangement.beatsPerMeasure)), 1)
         return ForEach(0...measureCount, id: \.self) { measure in
@@ -134,7 +185,6 @@ struct StaffNotationView: View {
 
     // MARK: - 音符
 
-    /// 画面内（± noteWidth のバッファ付き）に入っている音符だけを描画する。
     private func visibleNotes(centerX: CGFloat, areaWidth: CGFloat) -> [PlayedNote] {
         arrangement.notes.filter { note in
             let x = CGFloat(note.startBeat - currentBeat) * beatWidth + centerX
@@ -143,10 +193,12 @@ struct StaffNotationView: View {
     }
 
     @ViewBuilder
-    private func noteView(for note: PlayedNote, x: CGFloat, isActive: Bool) -> some View {
+    private func noteView(for note: PlayedNote, x: CGFloat, isActive: Bool, chordSize: Int) -> some View {
         let y = yPosition(for: note.pitch)
         let baseColor: Color = note.hand == .right ? .blue : .red
         let color: Color = isActive ? .orange : baseColor
+        // 3音以上の和音で再生中はラベルを隠してノートヘッドのみ表示し視認性を確保
+        let showLabel = isActive || !isPlaying || chordSize < 3
 
         Group {
             if isActive {
@@ -178,10 +230,12 @@ struct StaffNotationView: View {
                     .position(x: x - (noteWidth / 2 + 10), y: y)
             }
 
-            Text(Solfege.baseName(for: note.pitch))
-                .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(color)
-                .position(x: x, y: y + lineSpacing * 1.9)
+            if showLabel {
+                Text(Solfege.baseName(for: note.pitch))
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(color)
+                    .position(x: x, y: y + lineSpacing * 1.9)
+            }
         }
     }
 
