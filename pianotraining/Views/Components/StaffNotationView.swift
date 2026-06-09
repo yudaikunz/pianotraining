@@ -75,11 +75,9 @@ struct StaffNotationView: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 12)
             }
-            // 半拍ごと（約300ms@100bpm）にスクロール位置を更新する
-            .onChange(of: Int(currentBeat * 2)) { _ in
-                withAnimation(.linear(duration: 0.3)) {
-                    proxy.scrollTo("playhead", anchor: .center)
-                }
+            // 再生ティックごと（50ms）に即座にスクロールし、カーソルを常に中央に保つ
+            .onChange(of: currentBeat) { _ in
+                proxy.scrollTo("playhead", anchor: .center)
             }
         }
     }
