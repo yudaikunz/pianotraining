@@ -81,16 +81,369 @@ struct SampleArrangements {
         bpm: 100
     )
 
-    // MARK: - メヌエット ト長調（バッハ／ペツォールト, BWV Anh.114）第1部（8小節分のフレーズ2つ）
+    // MARK: - 喜びの歌（ベートーヴェン 交響曲第9番より）ハ長調・8小節
 
+    /// 超初心者：右手のメロディのみ（白鍵のみ、ハ長調）
+    static let odeToJoy = Arrangement(
+        notes: [
+            PlayedNote(pitch: 64, startBeat: 0.0,  duration: 1.0, hand: .right), // ミ (E4)
+            PlayedNote(pitch: 64, startBeat: 1.0,  duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 2.0,  duration: 1.0, hand: .right), // ファ (F4)
+            PlayedNote(pitch: 67, startBeat: 3.0,  duration: 1.0, hand: .right), // ソ (G4)
+            PlayedNote(pitch: 67, startBeat: 4.0,  duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 65, startBeat: 5.0,  duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 64, startBeat: 6.0,  duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 7.0,  duration: 1.0, hand: .right), // レ (D4)
+            PlayedNote(pitch: 60, startBeat: 8.0,  duration: 1.0, hand: .right), // ド (C4)
+            PlayedNote(pitch: 60, startBeat: 9.0,  duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 10.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 11.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 12.0, duration: 1.5, hand: .right), // ミ（付点4分）
+            PlayedNote(pitch: 62, startBeat: 13.5, duration: 0.5, hand: .right), // レ（8分）
+            PlayedNote(pitch: 62, startBeat: 14.0, duration: 2.0, hand: .right), // レ（2分）
+            PlayedNote(pitch: 64, startBeat: 16.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 17.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 18.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 67, startBeat: 19.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 20.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 65, startBeat: 21.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 64, startBeat: 22.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 23.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 24.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 60, startBeat: 25.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 26.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 27.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 28.0, duration: 1.5, hand: .right), // レ（付点4分）
+            PlayedNote(pitch: 60, startBeat: 29.5, duration: 0.5, hand: .right), // ド（8分）
+            PlayedNote(pitch: 60, startBeat: 30.0, duration: 2.0, hand: .right), // ド（2分）
+        ],
+        bpm: 96
+    )
+
+    /// 初心者：両手版（メロディ＋左手バスライン）
+    static let odeToJoyTwoHands = Arrangement(
+        notes: odeToJoy.notes + [
+            PlayedNote(pitch: 48, startBeat: 0.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 4.0,  duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 16.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 28.0, duration: 4.0, hand: .left), // ソ (G2)
+        ],
+        bpm: 96
+    )
+
+    // MARK: - きらきら星（Twinkle Twinkle Little Star）ハ長調・12小節
+
+    /// 超初心者：右手メロディのみ
+    static let twinkleStar = Arrangement(
+        notes: [
+            // C C G G A A G(2)
+            PlayedNote(pitch: 60, startBeat: 0.0,  duration: 1.0, hand: .right), // ド (C4)
+            PlayedNote(pitch: 60, startBeat: 1.0,  duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 67, startBeat: 2.0,  duration: 1.0, hand: .right), // ソ (G4)
+            PlayedNote(pitch: 67, startBeat: 3.0,  duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 69, startBeat: 4.0,  duration: 1.0, hand: .right), // ラ (A4)
+            PlayedNote(pitch: 69, startBeat: 5.0,  duration: 1.0, hand: .right), // ラ
+            PlayedNote(pitch: 67, startBeat: 6.0,  duration: 2.0, hand: .right), // ソ（2拍）
+            // F F E E D D C(2)
+            PlayedNote(pitch: 65, startBeat: 8.0,  duration: 1.0, hand: .right), // ファ (F4)
+            PlayedNote(pitch: 65, startBeat: 9.0,  duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 64, startBeat: 10.0, duration: 1.0, hand: .right), // ミ (E4)
+            PlayedNote(pitch: 64, startBeat: 11.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 12.0, duration: 1.0, hand: .right), // レ (D4)
+            PlayedNote(pitch: 62, startBeat: 13.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 14.0, duration: 2.0, hand: .right), // ド（2拍）
+            // G G F F E E D(2)
+            PlayedNote(pitch: 67, startBeat: 16.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 17.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 65, startBeat: 18.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 65, startBeat: 19.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 64, startBeat: 20.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 21.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 22.0, duration: 2.0, hand: .right), // レ（2拍）
+            // G G F F E E D(2)
+            PlayedNote(pitch: 67, startBeat: 24.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 25.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 65, startBeat: 26.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 65, startBeat: 27.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 64, startBeat: 28.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 29.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 30.0, duration: 2.0, hand: .right), // レ（2拍）
+            // C C G G A A G(2)
+            PlayedNote(pitch: 60, startBeat: 32.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 60, startBeat: 33.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 67, startBeat: 34.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 35.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 69, startBeat: 36.0, duration: 1.0, hand: .right), // ラ
+            PlayedNote(pitch: 69, startBeat: 37.0, duration: 1.0, hand: .right), // ラ
+            PlayedNote(pitch: 67, startBeat: 38.0, duration: 2.0, hand: .right), // ソ（2拍）
+            // F F E E D D C(2)
+            PlayedNote(pitch: 65, startBeat: 40.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 65, startBeat: 41.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 64, startBeat: 42.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 43.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 44.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 62, startBeat: 45.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 46.0, duration: 2.0, hand: .right), // ド（2拍）
+        ],
+        bpm: 100
+    )
+
+    /// 初心者：両手版（右手メロディ＋左手バスライン）
+    static let twinkleStarTwoHands = Arrangement(
+        notes: twinkleStar.notes + [
+            PlayedNote(pitch: 48, startBeat: 0.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 4.0,  duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 53, startBeat: 8.0,  duration: 4.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 43, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 43, startBeat: 16.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 43, startBeat: 24.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 43, startBeat: 28.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 32.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 36.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 53, startBeat: 40.0, duration: 4.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 48, startBeat: 44.0, duration: 4.0, hand: .left), // ド (C3)
+        ],
+        bpm: 100
+    )
+
+    // MARK: - かえるのうた（カエルの合唱）ハ長調・7小節
+
+    /// 超初心者：右手メロディのみ
+    static let frogSong = Arrangement(
+        notes: [
+            // フレーズ1: C D E F E D C(2)
+            PlayedNote(pitch: 60, startBeat: 0.0,  duration: 1.0, hand: .right), // ド (C4)
+            PlayedNote(pitch: 62, startBeat: 1.0,  duration: 1.0, hand: .right), // レ (D4)
+            PlayedNote(pitch: 64, startBeat: 2.0,  duration: 1.0, hand: .right), // ミ (E4)
+            PlayedNote(pitch: 65, startBeat: 3.0,  duration: 1.0, hand: .right), // ファ (F4)
+            PlayedNote(pitch: 64, startBeat: 4.0,  duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 5.0,  duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 6.0,  duration: 2.0, hand: .right), // ド（2拍）
+            // フレーズ2: E F G A G F E(2)
+            PlayedNote(pitch: 64, startBeat: 8.0,  duration: 1.0, hand: .right), // ミ (E4)
+            PlayedNote(pitch: 65, startBeat: 9.0,  duration: 1.0, hand: .right), // ファ (F4)
+            PlayedNote(pitch: 67, startBeat: 10.0, duration: 1.0, hand: .right), // ソ (G4)
+            PlayedNote(pitch: 69, startBeat: 11.0, duration: 1.0, hand: .right), // ラ (A4)
+            PlayedNote(pitch: 67, startBeat: 12.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 65, startBeat: 13.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 64, startBeat: 14.0, duration: 2.0, hand: .right), // ミ（2拍）
+            // フレーズ3: 8分音符の輪唱部分 C×4 E×4 G×4 E×4
+            PlayedNote(pitch: 60, startBeat: 16.0, duration: 0.5, hand: .right), // ド
+            PlayedNote(pitch: 60, startBeat: 16.5, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 60, startBeat: 17.0, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 60, startBeat: 17.5, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 18.0, duration: 0.5, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 18.5, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 19.0, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 19.5, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 20.0, duration: 0.5, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 20.5, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 21.0, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 21.5, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 22.0, duration: 0.5, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 22.5, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 23.0, duration: 0.5, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 23.5, duration: 0.5, hand: .right),
+            // 最終音
+            PlayedNote(pitch: 60, startBeat: 24.0, duration: 4.0, hand: .right), // ド（4拍）
+        ],
+        bpm: 100
+    )
+
+    /// 初心者：両手版
+    static let frogSongTwoHands = Arrangement(
+        notes: frogSong.notes + [
+            PlayedNote(pitch: 48, startBeat: 0.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 4.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 16.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3)
+        ],
+        bpm: 100
+    )
+
+    // MARK: - チューリップ ハ長調・ABA'形式（12小節）
+
+    /// 超初心者：右手メロディのみ
+    static let tulip = Arrangement(
+        notes: [
+            // セクションA（前半）
+            PlayedNote(pitch: 60, startBeat: 0.0,  duration: 1.0, hand: .right), // ド (C4)
+            PlayedNote(pitch: 62, startBeat: 1.0,  duration: 1.0, hand: .right), // レ (D4)
+            PlayedNote(pitch: 64, startBeat: 2.0,  duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 60, startBeat: 4.0,  duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 5.0,  duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 6.0,  duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 67, startBeat: 8.0,  duration: 1.0, hand: .right), // ソ (G4)
+            PlayedNote(pitch: 64, startBeat: 9.0,  duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 10.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 11.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 12.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 13.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 14.0, duration: 2.0, hand: .right), // レ（2拍）
+            // セクションB（中間）
+            PlayedNote(pitch: 67, startBeat: 16.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 17.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 64, startBeat: 18.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 67, startBeat: 19.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 69, startBeat: 20.0, duration: 1.0, hand: .right), // ラ (A4)
+            PlayedNote(pitch: 69, startBeat: 21.0, duration: 1.0, hand: .right), // ラ
+            PlayedNote(pitch: 67, startBeat: 22.0, duration: 2.0, hand: .right), // ソ（2拍）
+            PlayedNote(pitch: 64, startBeat: 24.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 25.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 26.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 62, startBeat: 27.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 28.0, duration: 4.0, hand: .right), // ド（4拍）
+            // セクションA'（後半・同じだが最後の音がドに着地）
+            PlayedNote(pitch: 60, startBeat: 32.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 33.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 34.0, duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 60, startBeat: 36.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 37.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 38.0, duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 67, startBeat: 40.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 64, startBeat: 41.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 42.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 43.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 44.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 45.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 60, startBeat: 46.0, duration: 2.0, hand: .right), // ド（2拍）
+        ],
+        bpm: 96
+    )
+
+    /// 初心者：両手版
+    static let tulipTwoHands = Arrangement(
+        notes: tulip.notes + [
+            // セクションA（0-15）
+            PlayedNote(pitch: 48, startBeat: 0.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 4.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G2)
+            // セクションB（16-31）
+            PlayedNote(pitch: 48, startBeat: 16.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3)
+            // セクションA'（32-47）
+            PlayedNote(pitch: 48, startBeat: 32.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 36.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 40.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 44.0, duration: 4.0, hand: .left), // ド (C3)
+        ],
+        bpm: 96
+    )
+
+    // MARK: - ちょうちょう（G Mixolydian・白鍵のみ・ABA'形式・20小節）
+
+    /// 超初心者：右手メロディのみ
+    static let butterfly = Arrangement(
+        notes: [
+            // セクションA（0-31）
+            PlayedNote(pitch: 67, startBeat: 0.0,  duration: 1.0, hand: .right), // ソ (G4)
+            PlayedNote(pitch: 64, startBeat: 1.0,  duration: 1.0, hand: .right), // ミ (E4)
+            PlayedNote(pitch: 64, startBeat: 2.0,  duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 65, startBeat: 4.0,  duration: 1.0, hand: .right), // ファ (F4)
+            PlayedNote(pitch: 62, startBeat: 5.0,  duration: 1.0, hand: .right), // レ (D4)
+            PlayedNote(pitch: 62, startBeat: 6.0,  duration: 2.0, hand: .right), // レ（2拍）
+            PlayedNote(pitch: 60, startBeat: 8.0,  duration: 1.0, hand: .right), // ド (C4)
+            PlayedNote(pitch: 62, startBeat: 9.0,  duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 10.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 11.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 67, startBeat: 12.0, duration: 4.0, hand: .right), // ソ（4拍）
+            PlayedNote(pitch: 67, startBeat: 16.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 64, startBeat: 17.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 18.0, duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 65, startBeat: 20.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 62, startBeat: 21.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 62, startBeat: 22.0, duration: 2.0, hand: .right), // レ（2拍）
+            PlayedNote(pitch: 60, startBeat: 24.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 64, startBeat: 25.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 67, startBeat: 26.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 27.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 60, startBeat: 28.0, duration: 4.0, hand: .right), // ド（4拍）
+            // セクションB（32-63）
+            PlayedNote(pitch: 62, startBeat: 32.0, duration: 1.0, hand: .right), // レ (D4)
+            PlayedNote(pitch: 62, startBeat: 33.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 62, startBeat: 34.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 35.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 36.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 65, startBeat: 37.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 65, startBeat: 38.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 39.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 40.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 41.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 42.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 67, startBeat: 43.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 64, startBeat: 44.0, duration: 4.0, hand: .right), // ミ（4拍）
+            PlayedNote(pitch: 62, startBeat: 48.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 62, startBeat: 49.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 62, startBeat: 50.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 51.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 52.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 65, startBeat: 53.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 65, startBeat: 54.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 55.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 56.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 57.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 58.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 67, startBeat: 59.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 60.0, duration: 4.0, hand: .right), // ソ（4拍）
+            // セクションA'（64-79）
+            PlayedNote(pitch: 67, startBeat: 64.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 64, startBeat: 65.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 66.0, duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 65, startBeat: 68.0, duration: 1.0, hand: .right), // ファ
+            PlayedNote(pitch: 62, startBeat: 69.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 62, startBeat: 70.0, duration: 2.0, hand: .right), // レ（2拍）
+            PlayedNote(pitch: 60, startBeat: 72.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 64, startBeat: 73.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 67, startBeat: 74.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 75.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 60, startBeat: 76.0, duration: 4.0, hand: .right), // ド（4拍）
+        ],
+        bpm: 84
+    )
+
+    /// 初心者：両手版
+    static let butterflyTwoHands = Arrangement(
+        notes: butterfly.notes + [
+            // セクションA（0-31）
+            PlayedNote(pitch: 55, startBeat: 0.0,  duration: 4.0, hand: .left), // ソ (G3)
+            PlayedNote(pitch: 53, startBeat: 4.0,  duration: 4.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 55, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G3)
+            PlayedNote(pitch: 55, startBeat: 16.0, duration: 4.0, hand: .left), // ソ (G3)
+            PlayedNote(pitch: 53, startBeat: 20.0, duration: 4.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3)
+            // セクションB（32-63）
+            PlayedNote(pitch: 55, startBeat: 32.0, duration: 4.0, hand: .left), // ソ (G3)
+            PlayedNote(pitch: 55, startBeat: 36.0, duration: 4.0, hand: .left),
+            PlayedNote(pitch: 55, startBeat: 40.0, duration: 4.0, hand: .left),
+            PlayedNote(pitch: 55, startBeat: 44.0, duration: 4.0, hand: .left),
+            PlayedNote(pitch: 55, startBeat: 48.0, duration: 4.0, hand: .left),
+            PlayedNote(pitch: 55, startBeat: 52.0, duration: 4.0, hand: .left),
+            PlayedNote(pitch: 55, startBeat: 56.0, duration: 4.0, hand: .left),
+            PlayedNote(pitch: 55, startBeat: 60.0, duration: 4.0, hand: .left),
+            // セクションA'（64-79）
+            PlayedNote(pitch: 55, startBeat: 64.0, duration: 4.0, hand: .left),
+            PlayedNote(pitch: 53, startBeat: 68.0, duration: 4.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 48, startBeat: 72.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 76.0, duration: 4.0, hand: .left),
+        ],
+        bpm: 84
+    )
 
     // MARK: - メヌエット ト長調：本物の楽譜（中級）から難易度別バリエーションを導出
 
-    /// 中級用に内蔵した本物の楽譜データを基に、初級・超初心者向けの簡易版を作る。
-    /// プレースホルダーに頼らず「実際の曲」を難易度に応じて弾きやすく調整する:
-    ///   - 超初心者: 右手の旋律のみを抜き出し、ゆっくりのテンポで
-    ///   - 初級: 両手のまま、少しゆっくりのテンポで
-    ///   - 中級: 原曲そのまま
     private static func simplifiedMinuet(from full: Arrangement, for difficulty: Difficulty) -> Arrangement {
         switch difficulty {
         case .superBeginner:
@@ -98,6 +451,20 @@ struct SampleArrangements {
             return Arrangement(notes: melody, bpm: full.bpm * 0.75, beatsPerMeasure: full.beatsPerMeasure)
         case .beginner:
             return Arrangement(notes: full.notes, bpm: full.bpm * 0.88, beatsPerMeasure: full.beatsPerMeasure)
+        case .intermediate:
+            return full
+        }
+    }
+
+    /// 中間難易度ファイルを基に超初心者・初心者用アレンジを生成する汎用ヘルパー。
+    /// トルコ行進曲などの楽曲に使用する。
+    private static func simplified(from full: Arrangement, for difficulty: Difficulty) -> Arrangement {
+        switch difficulty {
+        case .superBeginner:
+            let melody = full.notes.filter { $0.hand == .right }
+            return Arrangement(notes: melody, bpm: full.bpm * 0.7, beatsPerMeasure: full.beatsPerMeasure)
+        case .beginner:
+            return Arrangement(notes: full.notes, bpm: full.bpm * 0.85, beatsPerMeasure: full.beatsPerMeasure)
         case .intermediate:
             return full
         }
@@ -118,7 +485,6 @@ struct SampleArrangements {
     )
 
     /// MIDIファイル読み込みのデモ用。`Resources/sample_melody.mid` を実際にパースして使う。
-    /// （きらきら星のメロディ。専用アレンジが用意されるまでの仮データ）
     private static let midiDemoArrangement: Arrangement? =
         MIDIFileParser.loadArrangement(resourceName: "sample_melody", fallbackHand: .right)
 
@@ -138,11 +504,16 @@ struct SampleArrangements {
         }
 
         // メヌエット ト長調は中級用に本物の楽譜（全32小節）を内蔵済み。
-        // 専用ファイルが無い初級・超初心者向けは、それを基に簡略化して提供する
-        // （プレースホルダーではなく、実際の楽曲データを使う）。
+        // 専用ファイルが無い初級・超初心者向けは、それを基に簡略化して提供する。
         if songID == "bach-minuet-g",
            let full = MusicXMLParser.loadArrangement(resourceName: "bach-minuet-g-intermediate") {
             return simplifiedMinuet(from: full, for: difficulty)
+        }
+
+        // トルコ行進曲は中級用MXLから超初心者・初心者向けを派生する。
+        if songID == "mozart-turkish",
+           let full = MusicXMLParser.loadArrangement(resourceName: "mozart-turkish-intermediate") {
+            return simplified(from: full, for: difficulty)
         }
 
         switch (songID, difficulty) {
@@ -150,6 +521,31 @@ struct SampleArrangements {
             return furEliseOpening
         case ("beethoven-elise", _):
             return furEliseTwoHands
+
+        case ("beethoven-ode", .superBeginner):
+            return odeToJoy
+        case ("beethoven-ode", _):
+            return odeToJoyTwoHands
+
+        case ("twinkle-star", .superBeginner):
+            return twinkleStar
+        case ("twinkle-star", _):
+            return twinkleStarTwoHands
+
+        case ("frog-song", .superBeginner):
+            return frogSong
+        case ("frog-song", _):
+            return frogSongTwoHands
+
+        case ("tulip", .superBeginner):
+            return tulip
+        case ("tulip", _):
+            return tulipTwoHands
+
+        case ("butterfly", .superBeginner):
+            return butterfly
+        case ("butterfly", _):
+            return butterflyTwoHands
 
         default:
             return midiDemoArrangement ?? scaleFallback

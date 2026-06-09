@@ -4,6 +4,7 @@ enum MusicPeriod: String, CaseIterable {
     case baroque = "バロック"
     case classical = "古典"
     case romantic = "ロマン"
+    case folk = "民謡・童謡"
 }
 
 enum Difficulty: String, CaseIterable, Identifiable {

@@ -14,12 +14,20 @@ struct DifficultyView: View {
                         .fontWeight(.bold)
                         .padding(.horizontal)
 
-                    ForEach(song.availableDifficulties) { difficulty in
-                        NavigationLink(destination: PracticeView(song: song, difficulty: difficulty)) {
-                            DifficultyCard(difficulty: difficulty)
+                    if song.availableDifficulties.isEmpty {
+                        Text("この曲は現在準備中です")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 32)
+                    } else {
+                        ForEach(song.availableDifficulties) { difficulty in
+                            NavigationLink(destination: PracticeView(song: song, difficulty: difficulty)) {
+                                DifficultyCard(difficulty: difficulty)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal)
                         }
-                        .buttonStyle(.plain)
-                        .padding(.horizontal)
                     }
                 }
             }
