@@ -5,6 +5,7 @@ import SwiftUI
 /// 各音符の下にドレミを添えることで「楽譜の読み方」とドレミを結びつけて学べるようにする。
 struct StaffNotationView: View {
     let arrangement: Arrangement
+    var currentBeat: Double = 0
 
     private let lineSpacing: CGFloat = 12
     /// 1拍（4分音符換算）あたりの横幅。音符の「拍位置」をそのまま横軸に対応させることで、
@@ -31,25 +32,65 @@ struct StaffNotationView: View {
     /// 1小節分の横幅
     private var measureWidth: CGFloat { CGFloat(arrangement.beatsPerMeasure) * beatWidth }
 
-    var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .top, spacing: 4) {
-                clefs
-                ZStack(alignment: .topLeading) {
-                    staffLines(topY: trebleTopY)
-                    staffLines(topY: bassTopY)
-                    middleCGuide
-                    barLines
+    /// 現在の拍位置に対応するX座標（再生カーソルと自動スクロールで共用）
+    private var currentBeatX: CGFloat {
+        CGFloat(currentBeat) * beatWidth + leadingPadding
+    }
 
-                    ForEach(arrangement.notes) { note in
-                        noteView(for: note, x: CGFloat(note.startBeat) * beatWidth + leadingPadding)
+    /// 現在の拍位置で鳴っている音符のID集合
+    private var activeNoteIDs: Set<UUID> {
+        Set(arrangement.notes
+            .filter { currentBeat >= $0.startBeat && currentBeat < $0.startBeat + $0.duration }
+            .map(\.id))
+    }
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 4) {
+                    clefs
+                    ZStack(alignment: .topLeading) {
+                        staffLines(topY: trebleTopY)
+                        staffLines(topY: bassTopY)
+                        middleCGuide
+                        barLines
+                        playheadCursor
+
+                        ForEach(arrangement.notes) { note in
+                            noteView(
+                                for: note,
+                                x: CGFloat(note.startBeat) * beatWidth + leadingPadding,
+                                isActive: activeNoteIDs.contains(note.id)
+                            )
+                        }
+
+                        // 自動スクロールのアンカー：再生カーソルの位置に置く
+                        Color.clear
+                            .frame(width: 1, height: contentHeight)
+                            .position(x: currentBeatX, y: contentHeight / 2)
+                            .id("playhead")
                     }
+                    .frame(width: contentWidth, height: contentHeight, alignment: .topLeading)
                 }
-                .frame(width: contentWidth, height: contentHeight, alignment: .topLeading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
+            // 半拍ごと（約300ms@100bpm）にスクロール位置を更新する
+            .onChange(of: Int(currentBeat * 2)) { _ in
+                withAnimation(.linear(duration: 0.3)) {
+                    proxy.scrollTo("playhead", anchor: .center)
+                }
+            }
         }
+    }
+
+    // MARK: - 再生カーソル
+
+    private var playheadCursor: some View {
+        Rectangle()
+            .fill(Color.orange.opacity(0.55))
+            .frame(width: 2, height: bassBottomY - trebleTopY + 8)
+            .position(x: currentBeatX, y: (trebleTopY + bassBottomY) / 2)
     }
 
     // MARK: - 音部記号（ト音記号／ヘ音記号）
@@ -115,11 +156,20 @@ struct StaffNotationView: View {
     /// `Group` はレイアウトに影響しない透過コンテナなので、
     /// 各要素はそのまま親の ZStack（明示フレーム済み）の座標系で `.position` される。
     @ViewBuilder
-    private func noteView(for note: PlayedNote, x: CGFloat) -> some View {
+    private func noteView(for note: PlayedNote, x: CGFloat, isActive: Bool) -> some View {
         let y = yPosition(for: note.pitch)
-        let color: Color = note.hand == .right ? .blue : .red
+        let baseColor: Color = note.hand == .right ? .blue : .red
+        let color: Color = isActive ? .orange : baseColor
 
         Group {
+            // アクティブ音符の後ろにハロー（発光感）を追加
+            if isActive {
+                Circle()
+                    .fill(Color.orange.opacity(0.18))
+                    .frame(width: 22, height: 22)
+                    .position(x: x, y: y)
+            }
+
             ForEach(ledgerLineYs(for: note.pitch), id: \.self) { ledgerY in
                 Rectangle()
                     .fill(Color(.systemGray3))
@@ -201,6 +251,6 @@ struct StaffNotationView: View {
 }
 
 #Preview {
-    StaffNotationView(arrangement: SampleArrangements.furEliseTwoHands)
+    StaffNotationView(arrangement: SampleArrangements.furEliseTwoHands, currentBeat: 2.0)
         .frame(height: 240)
 }

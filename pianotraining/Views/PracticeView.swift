@@ -65,7 +65,7 @@ struct PracticeView: View {
                 VStack(spacing: isLandscape ? 10 : 16) {
                     header
 
-                    StaffNotationView(arrangement: arrangement)
+                    StaffNotationView(arrangement: arrangement, currentBeat: currentBeat)
                         .frame(height: isLandscape ? 168 : 224)
                         .padding(.horizontal)
 
