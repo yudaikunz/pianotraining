@@ -1,43 +1,31 @@
 import SwiftUI
 
 /// 大譜表（ト音記号＝右手 / ヘ音記号＝左手）でドレミ併記の楽譜を表示する。
-/// 一般的な楽譜の見た目（符頭・符幹・加線・小節線・音部記号）に近づけつつ、
-/// 各音符の下にドレミを添えることで「楽譜の読み方」とドレミを結びつけて学べるようにする。
+/// FallingNotesView と同様に currentBeat から直接座標を計算する方式を採用し、
+/// ScrollView は使わない。現在の拍位置が常に中央のカーソル線と一致する。
 struct StaffNotationView: View {
     let arrangement: Arrangement
     var currentBeat: Double = 0
 
     private let lineSpacing: CGFloat = 12
-    /// 1拍（4分音符換算）あたりの横幅。音符の「拍位置」をそのまま横軸に対応させることで、
-    /// 同時に鳴る音符（和音・両手の合わせ）が縦に揃って見えるようにする。
+    /// 1拍あたりの横幅。FallingNotesView は縦方向に同じ比率を使う。
     private let beatWidth: CGFloat = 34
-    private let leadingPadding: CGFloat = 46
     private let noteWidth: CGFloat = 13
     private let noteHeight: CGFloat = 10
     private let stemLength: CGFloat = 30
+    /// 音部記号列の幅（左端に固定表示）
+    private let clefAreaWidth: CGFloat = 56
 
-    // 各譜表の最下線にあたる音
-    private let trebleBottomPitch = 64 // ホ(E4): ト音記号の最下線
-    private let bassBottomPitch = 43   // ト(G2): ヘ音記号の最下線
-    /// 譜表の真ん中の線（5本中3本目）の相対段位置（最下線=0、1本につき2段ずつ上がる）
+    private let trebleBottomPitch = 64 // E4: ト音記号の最下線
+    private let bassBottomPitch = 43   // G2: ヘ音記号の最下線
     private let middleLineStep = 4
 
-    private var trebleTopY: CGFloat { 28 }
+    private var trebleTopY: CGFloat { 16 }
     private var trebleBottomY: CGFloat { trebleTopY + lineSpacing * 4 }
     private var bassTopY: CGFloat { trebleBottomY + lineSpacing * 5 }
     private var bassBottomY: CGFloat { bassTopY + lineSpacing * 4 }
-    private var contentHeight: CGFloat { bassBottomY + 34 }
-    private var contentWidth: CGFloat { CGFloat(arrangement.totalBeats) * beatWidth + leadingPadding + 40 }
+    private var contentHeight: CGFloat { bassBottomY + 30 }
 
-    /// 1小節分の横幅
-    private var measureWidth: CGFloat { CGFloat(arrangement.beatsPerMeasure) * beatWidth }
-
-    /// 現在の拍位置に対応するX座標（再生カーソルと自動スクロールで共用）
-    private var currentBeatX: CGFloat {
-        CGFloat(currentBeat) * beatWidth + leadingPadding
-    }
-
-    /// 現在の拍位置で鳴っている音符のID集合
     private var activeNoteIDs: Set<UUID> {
         Set(arrangement.notes
             .filter { currentBeat >= $0.startBeat && currentBeat < $0.startBeat + $0.duration }
@@ -45,53 +33,48 @@ struct StaffNotationView: View {
     }
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 4) {
-                    clefs
-                    ZStack(alignment: .topLeading) {
-                        staffLines(topY: trebleTopY)
-                        staffLines(topY: bassTopY)
-                        middleCGuide
-                        barLines
-                        playheadCursor
+        GeometryReader { geo in
+            let notesAreaWidth = max(geo.size.width - clefAreaWidth, 100)
+            // 再生カーソルは常にノートエリアの中央に固定
+            let centerX = notesAreaWidth / 2
 
-                        ForEach(arrangement.notes) { note in
-                            noteView(
-                                for: note,
-                                x: CGFloat(note.startBeat) * beatWidth + leadingPadding,
-                                isActive: activeNoteIDs.contains(note.id)
-                            )
-                        }
+            HStack(spacing: 0) {
+                // 音部記号：スクロールせず左端に固定
+                clefs
+                    .frame(width: clefAreaWidth, height: contentHeight)
+                    .background(Color(.systemBackground))
+                    .zIndex(1)
 
-                        // 自動スクロールのアンカー：再生カーソルの位置に置く
-                        Color.clear
-                            .frame(width: 1, height: contentHeight)
-                            .position(x: currentBeatX, y: contentHeight / 2)
-                            .id("playhead")
+                // 音符・五線：currentBeat 基準で位置を計算し .clipped() で切り抜く
+                ZStack(alignment: .topLeading) {
+                    staffLines(topY: trebleTopY, width: notesAreaWidth)
+                    staffLines(topY: bassTopY, width: notesAreaWidth)
+                    middleCGuide(width: notesAreaWidth)
+                    barLines(centerX: centerX, areaWidth: notesAreaWidth)
+
+                    ForEach(visibleNotes(centerX: centerX, areaWidth: notesAreaWidth)) { note in
+                        let x = CGFloat(note.startBeat - currentBeat) * beatWidth + centerX
+                        noteView(for: note, x: x, isActive: activeNoteIDs.contains(note.id))
                     }
-                    .frame(width: contentWidth, height: contentHeight, alignment: .topLeading)
+
+                    playheadCursor(at: centerX)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 12)
-            }
-            // 再生ティックごと（50ms）に即座にスクロールし、カーソルを常に中央に保つ
-            .onChange(of: currentBeat) { _ in
-                proxy.scrollTo("playhead", anchor: .center)
+                .frame(width: notesAreaWidth, height: contentHeight)
+                .clipped()
             }
         }
     }
 
-    // MARK: - 再生カーソル
+    // MARK: - 再生カーソル（常に中央に固定）
 
-    private var playheadCursor: some View {
+    private func playheadCursor(at x: CGFloat) -> some View {
         Rectangle()
             .fill(Color.orange.opacity(0.55))
             .frame(width: 2, height: bassBottomY - trebleTopY + 8)
-            .position(x: currentBeatX, y: (trebleTopY + bassBottomY) / 2)
+            .position(x: x, y: (trebleTopY + bassBottomY) / 2)
     }
 
-    // MARK: - 音部記号（ト音記号／ヘ音記号）
+    // MARK: - 音部記号
 
     private var clefs: some View {
         VStack(spacing: 0) {
@@ -101,7 +84,6 @@ struct StaffNotationView: View {
                 .frame(height: lineSpacing * 4 + lineSpacing * 2.5, alignment: .top)
         }
         .padding(.top, trebleTopY - lineSpacing * 1.7)
-        .frame(width: 40)
     }
 
     private func clefGlyph(_ symbol: String, color: Color, label: String, fontSize: CGFloat) -> some View {
@@ -117,42 +99,49 @@ struct StaffNotationView: View {
 
     // MARK: - 五線・小節線・ガイド
 
-    private func staffLines(topY: CGFloat) -> some View {
+    private func staffLines(topY: CGFloat, width: CGFloat) -> some View {
         ForEach(0..<5, id: \.self) { i in
             Rectangle()
                 .fill(Color(.systemGray3))
-                .frame(width: contentWidth, height: 1)
+                .frame(width: width, height: 1)
                 .offset(y: topY + CGFloat(i) * lineSpacing)
         }
     }
 
-    /// 小節の区切りを示す縦線（大譜表をまたいで一本につながる）。最後の小節の後ろは終止線として太く表示する。
-    private var barLines: some View {
+    /// 小節線：各小節の拍位置を currentBeat との差から x 座標を計算して描く。
+    private func barLines(centerX: CGFloat, areaWidth: CGFloat) -> some View {
         let measureCount = max(Int(ceil(arrangement.totalBeats / arrangement.beatsPerMeasure)), 1)
         return ForEach(0...measureCount, id: \.self) { measure in
+            let barBeat = Double(measure) * arrangement.beatsPerMeasure
+            let x = CGFloat(barBeat - currentBeat) * beatWidth + centerX
             let isFinal = measure == measureCount
-            let x = CGFloat(measure) * measureWidth + leadingPadding - beatWidth * 0.42
-            Rectangle()
-                .fill(Color(.systemGray3))
-                .frame(width: isFinal ? 2.6 : 1, height: bassBottomY - trebleTopY)
-                .position(x: x, y: (trebleTopY + bassBottomY) / 2)
+            if x > -10 && x < areaWidth + 10 {
+                Rectangle()
+                    .fill(Color(.systemGray3))
+                    .frame(width: isFinal ? 2.6 : 1, height: bassBottomY - trebleTopY)
+                    .position(x: x, y: (trebleTopY + bassBottomY) / 2)
+            }
         }
     }
 
-    /// 「中央ド」がト音記号とヘ音記号のちょうど間にあることを示す薄いガイド線
-    private var middleCGuide: some View {
+    private func middleCGuide(width: CGFloat) -> some View {
         let y = (trebleBottomY + bassTopY) / 2
         return Rectangle()
             .fill(Color(.systemGray5))
-            .frame(width: contentWidth, height: 1)
+            .frame(width: width, height: 1)
             .offset(y: y)
     }
 
     // MARK: - 音符
 
-    /// 1つの音符を表す要素群（加線・符幹・符頭・臨時記号・ドレミラベル）を返す。
-    /// `Group` はレイアウトに影響しない透過コンテナなので、
-    /// 各要素はそのまま親の ZStack（明示フレーム済み）の座標系で `.position` される。
+    /// 画面内（± noteWidth のバッファ付き）に入っている音符だけを描画する。
+    private func visibleNotes(centerX: CGFloat, areaWidth: CGFloat) -> [PlayedNote] {
+        arrangement.notes.filter { note in
+            let x = CGFloat(note.startBeat - currentBeat) * beatWidth + centerX
+            return x > -noteWidth * 3 && x < areaWidth + noteWidth * 3
+        }
+    }
+
     @ViewBuilder
     private func noteView(for note: PlayedNote, x: CGFloat, isActive: Bool) -> some View {
         let y = yPosition(for: note.pitch)
@@ -160,7 +149,6 @@ struct StaffNotationView: View {
         let color: Color = isActive ? .orange : baseColor
 
         Group {
-            // アクティブ音符の後ろにハロー（発光感）を追加
             if isActive {
                 Circle()
                     .fill(Color.orange.opacity(0.18))
@@ -190,7 +178,6 @@ struct StaffNotationView: View {
                     .position(x: x - (noteWidth / 2 + 10), y: y)
             }
 
-            // ドレミラベル（符頭の少し下に表示）
             Text(Solfege.baseName(for: note.pitch))
                 .font(.system(size: 10, weight: .bold))
                 .foregroundStyle(color)
@@ -198,8 +185,6 @@ struct StaffNotationView: View {
         }
     }
 
-    /// 符幹（符頭から伸びる縦線）。一般的な記譜法にならい、譜表の中央線より上の音は左側に下向き、
-    /// 中央線以下の音は右側に上向きに描く。
     private func stem(for note: PlayedNote, x: CGFloat, y: CGFloat, color: Color) -> some View {
         let bottomPitch = note.pitch >= 60 ? trebleBottomPitch : bassBottomPitch
         let relativeStep = Solfege.diatonicStep(for: note.pitch) - Solfege.diatonicStep(for: bottomPitch)
@@ -213,9 +198,6 @@ struct StaffNotationView: View {
             .position(x: stemX, y: centerY)
     }
 
-    /// 譜表の外側にある音符に必要な加線のY座標一覧（譜表に近い側から順）。
-    /// 一般的な記譜法と同様、譜表のすぐ外側の「間（ま）」には加線を引かず、
-    /// 線の位置（最下線/最上線から偶数段離れた位置）にだけ加線を引く。
     private func ledgerLineYs(for pitch: Int) -> [CGFloat] {
         let isTreble = pitch >= 60
         let bottomPitch = isTreble ? trebleBottomPitch : bassBottomPitch
@@ -234,7 +216,6 @@ struct StaffNotationView: View {
         return []
     }
 
-    /// MIDIノート番号 → 五線譜上のY座標（ピッチに応じてト音記号またはヘ音記号の譜表で計算）
     private func yPosition(for pitch: Int) -> CGFloat {
         if pitch >= 60 {
             let refStep = Solfege.diatonicStep(for: trebleBottomPitch)
