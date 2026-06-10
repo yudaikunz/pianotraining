@@ -56,7 +56,7 @@ struct DifficultyView: View {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
                         .fill(song.period.color.opacity(0.15))
                         .frame(width: 52, height: 52)
-                    Image(systemName: song.period.iconName)
+                    Image(systemName: song.iconName)
                         .font(.system(size: 24, weight: .medium))
                         .foregroundStyle(song.period.color)
                 }

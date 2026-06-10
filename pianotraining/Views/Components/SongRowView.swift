@@ -5,7 +5,7 @@ struct SongRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
-            periodIcon
+            songIcon
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(song.title)
@@ -41,12 +41,12 @@ struct SongRowView: View {
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
-    private var periodIcon: some View {
+    private var songIcon: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(song.period.color.opacity(0.15))
                 .frame(width: 50, height: 50)
-            Image(systemName: song.period.iconName)
+            Image(systemName: song.iconName)
                 .font(.system(size: 20, weight: .medium))
                 .foregroundStyle(song.period.color)
         }

@@ -15,16 +15,6 @@ enum MusicPeriod: String, CaseIterable {
         case .folk:      return .green
         }
     }
-
-    /// 一覧画面でのアイコン
-    var iconName: String {
-        switch self {
-        case .baroque:   return "pianokeys"
-        case .classical: return "music.quarternote.3"
-        case .romantic:  return "music.note"
-        case .folk:      return "leaf"
-        }
-    }
 }
 
 enum Difficulty: String, CaseIterable, Identifiable {
@@ -108,5 +98,6 @@ struct Song: Identifiable {
     let composer: String
     let description: String
     let period: MusicPeriod
+    let iconName: String
     let availableDifficulties: [Difficulty]
 }
