@@ -45,6 +45,13 @@ struct SongListView: View {
             .navigationTitle("ピアノ練習")
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "曲名・作曲家で検索")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
         }
     }
 
