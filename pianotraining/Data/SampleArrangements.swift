@@ -543,6 +543,106 @@ struct SampleArrangements {
         case ("butterfly", _):
             return butterflyTwoHands
 
+        case ("pachelbel-canon", .superBeginner):
+            return pachelbelCanon
+        case ("pachelbel-canon", _):
+            return pachelbelCanonTwoHands
+
+        case ("bach-air-g-string", .superBeginner):
+            return bachAirGString
+        case ("bach-air-g-string", _):
+            return bachAirGStringTwoHands
+
+        case ("bach-jesu-joy", .superBeginner):
+            return bachJesuJoy
+        case ("bach-jesu-joy", _):
+            return bachJesuJoyTwoHands
+
+        case ("mozart-eine-kleine", .superBeginner):
+            return mozartEineKleine
+        case ("mozart-eine-kleine", _):
+            return mozartEineKleineTwoHands
+
+        case ("mendelssohn-wedding", .superBeginner):
+            return mendelssohnWedding
+        case ("mendelssohn-wedding", _):
+            return mendelssohnWeddingTwoHands
+
+        case ("brahms-lullaby", .superBeginner):
+            return brahmsLullaby
+        case ("brahms-lullaby", _):
+            return brahmsLullabyTwoHands
+
+        case ("strauss-blue-danube", .superBeginner):
+            return straussBlueDanube
+        case ("strauss-blue-danube", _):
+            return straussBlueDanubeTwoHands
+
+        case ("dvorak-going-home", .superBeginner):
+            return dvorakGoingHome
+        case ("dvorak-going-home", _):
+            return dvorakGoingHomeTwoHands
+
+        case ("grieg-morning-mood", .superBeginner):
+            return griegMorningMood
+        case ("grieg-morning-mood", _):
+            return griegMorningMoodTwoHands
+
+        case ("elgar-pomp-circumstance", .superBeginner):
+            return elgarPompCircumstance
+        case ("elgar-pomp-circumstance", _):
+            return elgarPompCircumstanceTwoHands
+
+        case ("chopin-waltz", .superBeginner):
+            return chopinWaltz
+        case ("chopin-waltz", _):
+            return chopinWaltzTwoHands
+
+        case ("schubert-avemaria", .superBeginner):
+            return schubertAveMaria
+        case ("schubert-avemaria", _):
+            return schubertAveMariaTwoHands
+
+        case ("furusato", .superBeginner):
+            return furusato
+        case ("furusato", _):
+            return furusatoTwoHands
+
+        case ("nanatsu-no-ko", .superBeginner):
+            return nanatsuNoKo
+        case ("nanatsu-no-ko", _):
+            return nanatsuNoKoTwoHands
+
+        case ("grandfathers-clock", .superBeginner):
+            return grandfathersClock
+        case ("grandfathers-clock", _):
+            return grandfathersClockTwoHands
+
+        case ("silent-night", .superBeginner):
+            return silentNight
+        case ("silent-night", _):
+            return silentNightTwoHands
+
+        case ("auld-lang-syne", .superBeginner):
+            return auldLangSyne
+        case ("auld-lang-syne", _):
+            return auldLangSyneTwoHands
+
+        case ("mary-lamb", .superBeginner):
+            return maryHadALittleLamb
+        case ("mary-lamb", _):
+            return maryHadALittleLambTwoHands
+
+        case ("london-bridge", .superBeginner):
+            return londonBridge
+        case ("london-bridge", _):
+            return londonBridgeTwoHands
+
+        case ("working-on-railroad", .superBeginner):
+            return workingOnTheRailroad
+        case ("working-on-railroad", _):
+            return workingOnTheRailroadTwoHands
+
         default:
             return midiDemoArrangement ?? scaleFallback
         }
