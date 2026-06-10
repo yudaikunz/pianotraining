@@ -23,7 +23,10 @@ struct DifficultyView: View {
                     } else {
                         ForEach(song.availableDifficulties) { difficulty in
                             NavigationLink(destination: PracticeView(song: song, difficulty: difficulty)) {
-                                DifficultyCard(difficulty: difficulty)
+                                DifficultyCard(
+                                    difficulty: difficulty,
+                                    durationSeconds: SongDurations.seconds(songID: song.id, difficulty: difficulty)
+                                )
                             }
                             .buttonStyle(.plain)
                             .padding(.horizontal)
@@ -49,9 +52,14 @@ struct DifficultyView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Image(systemName: "pianokeys")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.secondary)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(song.period.color.opacity(0.15))
+                        .frame(width: 52, height: 52)
+                    Image(systemName: song.period.iconName)
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(song.period.color)
+                }
             }
 
             Divider()
@@ -61,24 +69,25 @@ struct DifficultyView: View {
                 .foregroundStyle(.secondary)
 
             HStack {
-                Label(song.period.rawValue, systemImage: "music.note")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                PeriodBadge(period: song.period)
                 Spacer()
-                Label("約\(song.durationMinutes)分", systemImage: "clock")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if let summary = SongDurations.summaryText(for: song) {
+                    Label(summary, systemImage: "clock")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .padding()
         .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .padding(.horizontal)
     }
 }
 
 struct DifficultyCard: View {
     let difficulty: Difficulty
+    let durationSeconds: Double
 
     var color: Color {
         switch difficulty {
@@ -121,12 +130,17 @@ struct DifficultyCard: View {
 
                 Spacer()
 
-                HStack(spacing: 3) {
-                    ForEach(0..<3) { i in
-                        Image(systemName: "star.fill")
-                            .font(.caption)
-                            .foregroundStyle(i < difficulty.starCount ? color : Color(.systemGray4))
+                VStack(alignment: .trailing, spacing: 6) {
+                    HStack(spacing: 3) {
+                        ForEach(0..<3) { i in
+                            Image(systemName: "star.fill")
+                                .font(.caption)
+                                .foregroundStyle(i < difficulty.starCount ? color : Color(.systemGray4))
+                        }
                     }
+                    Label(DurationFormat.string(for: durationSeconds), systemImage: "clock")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
 
                 Image(systemName: "chevron.right")

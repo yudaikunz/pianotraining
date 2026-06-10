@@ -40,6 +40,24 @@ struct Arrangement {
     var totalBeats: Double {
         notes.map { $0.startBeat + $0.duration }.max() ?? 0
     }
+
+    /// 演奏にかかる実時間（秒）
+    var durationSeconds: Double {
+        bpm > 0 ? totalBeats / bpm * 60 : 0
+    }
+}
+
+/// 演奏時間（秒）を「45秒」「1分20秒」のような表示用文字列に変換する。
+enum DurationFormat {
+    static func string(for seconds: Double) -> String {
+        let total = Int(seconds.rounded())
+        if total < 60 {
+            return "\(total)秒"
+        }
+        let minutes = total / 60
+        let remainingSeconds = total % 60
+        return remainingSeconds == 0 ? "\(minutes)分" : "\(minutes)分\(remainingSeconds)秒"
+    }
 }
 
 // MARK: - ドレミ表記への変換

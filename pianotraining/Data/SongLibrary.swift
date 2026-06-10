@@ -10,8 +10,7 @@ struct SongLibrary {
             composer: "J.S. バッハ（ペツォールト）",
             description: "バッハの作品として広く知られる親しみやすいメロディ。初心者の登竜門として最適。",
             period: .baroque,
-            availableDifficulties: [.superBeginner, .beginner, .intermediate],
-            durationMinutes: 1
+            availableDifficulties: [.superBeginner, .beginner, .intermediate]
         ),
         Song(
             id: "bach-prelude-c",
@@ -19,8 +18,7 @@ struct SongLibrary {
             composer: "J.S. バッハ",
             description: "平均律クラヴィーア曲集第1巻より。アルペジオのパターンが美しい名曲。",
             period: .baroque,
-            availableDifficulties: [.intermediate],
-            durationMinutes: 2
+            availableDifficulties: [.intermediate]
         ),
 
         // MARK: - 古典
@@ -30,8 +28,7 @@ struct SongLibrary {
             composer: "L.v. ベートーヴェン",
             description: "ピアノ学習者に最も親しまれる名曲のひとつ。繰り返しのフレーズが覚えやすい。",
             period: .classical,
-            availableDifficulties: [.superBeginner, .beginner, .intermediate],
-            durationMinutes: 3
+            availableDifficulties: [.superBeginner, .beginner, .intermediate]
         ),
         Song(
             id: "beethoven-ode",
@@ -39,8 +36,7 @@ struct SongLibrary {
             composer: "L.v. ベートーヴェン",
             description: "交響曲第9番「合唱」のテーマ。誰もが知る名旋律をピアノで楽しもう。",
             period: .classical,
-            availableDifficulties: [.superBeginner, .beginner],
-            durationMinutes: 2
+            availableDifficulties: [.superBeginner, .beginner]
         ),
         Song(
             id: "mozart-turkish",
@@ -48,8 +44,7 @@ struct SongLibrary {
             composer: "W.A. モーツァルト",
             description: "ピアノソナタ第11番の終楽章。軽快なリズムと明るい旋律が特徴。",
             period: .classical,
-            availableDifficulties: [.superBeginner, .beginner, .intermediate],
-            durationMinutes: 3
+            availableDifficulties: [.superBeginner, .beginner, .intermediate]
         ),
 
         // MARK: - ロマン
@@ -59,8 +54,7 @@ struct SongLibrary {
             composer: "C. ドビュッシー",
             description: "ベルガマスク組曲より。印象派を代表する幻想的なピアノ曲。",
             period: .romantic,
-            availableDifficulties: [.intermediate],
-            durationMinutes: 5
+            availableDifficulties: [.intermediate]
         ),
         Song(
             id: "chopin-waltz",
@@ -68,8 +62,7 @@ struct SongLibrary {
             composer: "F. ショパン",
             description: "ショパンのワルツ第6番。軽やかで可愛らしい雰囲気が人気。",
             period: .romantic,
-            availableDifficulties: [],
-            durationMinutes: 2
+            availableDifficulties: []
         ),
         Song(
             id: "schubert-avemaria",
@@ -77,8 +70,7 @@ struct SongLibrary {
             composer: "F. シューベルト",
             description: "清らかで感動的な名曲。ゆっくりとしたテンポで練習しやすい。",
             period: .romantic,
-            availableDifficulties: [],
-            durationMinutes: 4
+            availableDifficulties: []
         ),
 
         // MARK: - 民謡・童謡
@@ -88,8 +80,7 @@ struct SongLibrary {
             composer: "フランス民謡",
             description: "世界中で愛される童謡。シンプルなメロディでピアノデビューに最適。",
             period: .folk,
-            availableDifficulties: [.superBeginner, .beginner],
-            durationMinutes: 1
+            availableDifficulties: [.superBeginner, .beginner]
         ),
         Song(
             id: "frog-song",
@@ -97,8 +88,7 @@ struct SongLibrary {
             composer: "ドイツ民謡",
             description: "ドレミファを順番に弾く練習にぴったりの定番童謡。輪唱でも有名。",
             period: .folk,
-            availableDifficulties: [.superBeginner, .beginner],
-            durationMinutes: 1
+            availableDifficulties: [.superBeginner, .beginner]
         ),
         Song(
             id: "tulip",
@@ -106,8 +96,7 @@ struct SongLibrary {
             composer: "近藤宮子 / 井上武士",
             description: "春の定番童謡。明るいハ長調のメロディが弾きやすく、初心者に人気。",
             period: .folk,
-            availableDifficulties: [.superBeginner, .beginner],
-            durationMinutes: 1
+            availableDifficulties: [.superBeginner, .beginner]
         ),
         Song(
             id: "butterfly",
@@ -115,8 +104,7 @@ struct SongLibrary {
             composer: "ドイツ民謡",
             description: "白鍵だけで弾けるやさしいメロディ。ゆっくりとしたテンポで丁寧に練習できる。",
             period: .folk,
-            availableDifficulties: [.superBeginner, .beginner],
-            durationMinutes: 1
+            availableDifficulties: [.superBeginner, .beginner]
         ),
     ]
 }

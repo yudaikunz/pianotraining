@@ -1,10 +1,30 @@
-import Foundation
+import SwiftUI
 
 enum MusicPeriod: String, CaseIterable {
     case baroque = "バロック"
     case classical = "古典"
     case romantic = "ロマン"
     case folk = "民謡・童謡"
+
+    /// 一覧画面でのアイコン・バッジ表示に使うアクセントカラー
+    var color: Color {
+        switch self {
+        case .baroque:   return .brown
+        case .classical: return .indigo
+        case .romantic:  return .pink
+        case .folk:      return .green
+        }
+    }
+
+    /// 一覧画面でのアイコン
+    var iconName: String {
+        switch self {
+        case .baroque:   return "pianokeys"
+        case .classical: return "music.quarternote.3"
+        case .romantic:  return "music.note"
+        case .folk:      return "leaf"
+        }
+    }
 }
 
 enum Difficulty: String, CaseIterable, Identifiable {
@@ -89,5 +109,4 @@ struct Song: Identifiable {
     let description: String
     let period: MusicPeriod
     let availableDifficulties: [Difficulty]
-    let durationMinutes: Int
 }

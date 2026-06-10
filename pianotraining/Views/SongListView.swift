@@ -26,16 +26,22 @@ struct SongListView: View {
                 if filteredSongs.isEmpty {
                     emptyState
                 } else {
-                    List(filteredSongs) { song in
-                        NavigationLink(destination: DifficultyView(song: song)) {
-                            SongRowView(song: song)
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredSongs) { song in
+                                NavigationLink(destination: DifficultyView(song: song)) {
+                                    SongRowView(song: song)
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                     }
-                    .listStyle(.plain)
                     .animation(.default, value: filteredSongs.map { $0.id })
                 }
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("ピアノ練習")
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "曲名・作曲家で検索")

@@ -14,11 +14,14 @@ import Foundation
 ///   3. それも無ければ簡単な音階のフォールバック
 struct SampleArrangements {
 
-    // MARK: - エリーゼのために（ベートーヴェン）有名な開始テーマ（ロンド形式のA主題）
+    // MARK: - エリーゼのために（ベートーヴェン）有名な開始テーマ（ロンド形式のA-B主題）
 
-    /// 超初心者向け：右手のメロディのみ（有名なテーマの前半フレーズ）
+    /// 超初心者向け：右手のメロディのみ（有名なテーマのA-Bフレーズ全体）。
+    /// 両手版（`furEliseTwoHands`）と同じ長さ（拍数）にすることで、
+    /// 難易度による演奏時間の差を抑える。
     static let furEliseOpening = Arrangement(
         notes: [
+            // Aフレーズ
             PlayedNote(pitch: 76, startBeat: 0.0,  duration: 0.5, hand: .right), // ミ (E5)
             PlayedNote(pitch: 75, startBeat: 0.5,  duration: 0.5, hand: .right), // レ#(D#5)
             PlayedNote(pitch: 76, startBeat: 1.0,  duration: 0.5, hand: .right), // ミ
@@ -40,14 +43,7 @@ struct SampleArrangements {
             PlayedNote(pitch: 76, startBeat: 12.0, duration: 0.5, hand: .right), // ミ (E5)
             PlayedNote(pitch: 75, startBeat: 12.5, duration: 0.5, hand: .right), // レ#(D#5)
             PlayedNote(pitch: 69, startBeat: 13.0, duration: 1.5, hand: .right), // ラ (A4)
-        ],
-        bpm: 100
-    )
-
-    /// 初心者・中級向け：有名なテーマ（前半＋後半フレーズ）の右手メロディ＋左手の伴奏
-    static let furEliseTwoHands = Arrangement(
-        notes: furEliseOpening.notes + [
-            // テーマ後半フレーズ（前半と同じ動機から、最後は主音ラに着地して締めくくる）
+            // Bフレーズ（Aと同じ動機から、最後は主音ラに着地して締めくくる）
             PlayedNote(pitch: 76, startBeat: 14.5, duration: 0.5, hand: .right), // ミ (E5)
             PlayedNote(pitch: 75, startBeat: 15.0, duration: 0.5, hand: .right), // レ#(D#5)
             PlayedNote(pitch: 76, startBeat: 15.5, duration: 0.5, hand: .right), // ミ
@@ -65,7 +61,13 @@ struct SampleArrangements {
             PlayedNote(pitch: 72, startBeat: 23.5, duration: 0.5, hand: .right), // ド (C5)
             PlayedNote(pitch: 71, startBeat: 24.0, duration: 0.5, hand: .right), // シ (B4)
             PlayedNote(pitch: 69, startBeat: 24.5, duration: 2.0, hand: .right), // ラ (A4)
+        ],
+        bpm: 100
+    )
 
+    /// 初心者・中級向け：右手メロディ（A-Bフレーズ）＋左手の伴奏
+    static let furEliseTwoHands = Arrangement(
+        notes: furEliseOpening.notes + [
             // 左手伴奏：テーマの和声（イ短調→ホ長調→イ短調）に沿った持続和音の簡略パターン
             PlayedNote(pitch: 45, startBeat: 0.0,  duration: 7.0, hand: .left), // ラ (A2)
             PlayedNote(pitch: 52, startBeat: 0.0,  duration: 7.0, hand: .left), // ミ (E3)
@@ -444,25 +446,17 @@ struct SampleArrangements {
 
     // MARK: - メヌエット ト長調：本物の楽譜（中級）から難易度別バリエーションを導出
 
-    private static func simplifiedMinuet(from full: Arrangement, for difficulty: Difficulty) -> Arrangement {
-        switch difficulty {
-        case .superBeginner:
-            let melody = full.notes.filter { $0.hand == .right }
-            return Arrangement(notes: melody, bpm: full.bpm * 0.75, beatsPerMeasure: full.beatsPerMeasure)
-        case .beginner:
-            return Arrangement(notes: full.notes, bpm: full.bpm * 0.88, beatsPerMeasure: full.beatsPerMeasure)
-        case .intermediate:
-            return full
-        }
-    }
-
     /// 中間難易度ファイルを基に超初心者・初心者用アレンジを生成する汎用ヘルパー。
-    /// トルコ行進曲などの楽曲に使用する。
+    ///
+    /// 超初心者は片手・単音のみで弾くため、テンポ自体は原曲と同じにする
+    /// （極端に遅くすると間延びして弾きにくくなるため）。
+    /// 初心者は両手を合わせる練習になるぶん、少しだけゆっくりにする。
+    /// いずれも音価（拍数）は原曲のまま変えないため、難易度間で演奏時間が揃う。
     private static func simplified(from full: Arrangement, for difficulty: Difficulty) -> Arrangement {
         switch difficulty {
         case .superBeginner:
             let melody = full.notes.filter { $0.hand == .right }
-            return Arrangement(notes: melody, bpm: full.bpm * 0.7, beatsPerMeasure: full.beatsPerMeasure)
+            return Arrangement(notes: melody, bpm: full.bpm, beatsPerMeasure: full.beatsPerMeasure)
         case .beginner:
             return Arrangement(notes: full.notes, bpm: full.bpm * 0.85, beatsPerMeasure: full.beatsPerMeasure)
         case .intermediate:
@@ -507,7 +501,7 @@ struct SampleArrangements {
         // 専用ファイルが無い初級・超初心者向けは、それを基に簡略化して提供する。
         if songID == "bach-minuet-g",
            let full = MusicXMLParser.loadArrangement(resourceName: "bach-minuet-g-intermediate") {
-            return simplifiedMinuet(from: full, for: difficulty)
+            return simplified(from: full, for: difficulty)
         }
 
         // トルコ行進曲は中級用MXLから超初心者・初心者向けを派生する。

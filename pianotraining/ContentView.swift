@@ -9,7 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        SongListView()
+        TabView {
+            SongListView()
+                .tabItem {
+                    Label("曲一覧", systemImage: "music.note.list")
+                }
+
+            SettingsView()
+                .tabItem {
+                    Label("設定", systemImage: "gearshape")
+                }
+        }
     }
 }
 

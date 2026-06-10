@@ -4,35 +4,52 @@ struct SongRowView: View {
     let song: Song
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(song.title)
-                        .font(.headline)
-                    Text(song.composer)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                PeriodBadge(period: song.period)
-            }
+        HStack(alignment: .top, spacing: 14) {
+            periodIcon
 
-            Text(song.description)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(song.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
 
-            HStack(spacing: 6) {
-                ForEach(song.availableDifficulties) { difficulty in
-                    DifficultyBadge(difficulty: difficulty)
-                }
-                Spacer()
-                Label("約\(song.durationMinutes)分", systemImage: "clock")
-                    .font(.caption2)
+                Text(song.composer)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
+
+                Text(song.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+
+                HStack(spacing: 6) {
+                    PeriodBadge(period: song.period)
+                    ForEach(song.availableDifficulties) { difficulty in
+                        DifficultyBadge(difficulty: difficulty)
+                    }
+                    Spacer()
+                    if let summary = SongDurations.summaryText(for: song) {
+                        Label(summary, systemImage: "clock")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.top, 2)
             }
         }
-        .padding(.vertical, 4)
+        .padding(14)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private var periodIcon: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(song.period.color.opacity(0.15))
+                .frame(width: 50, height: 50)
+            Image(systemName: song.period.iconName)
+                .font(.system(size: 20, weight: .medium))
+                .foregroundStyle(song.period.color)
+        }
     }
 }
 
@@ -45,8 +62,9 @@ struct PeriodBadge: View {
             .fontWeight(.medium)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(Color(.systemGray5))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .background(period.color.opacity(0.12))
+            .foregroundStyle(period.color)
+            .clipShape(Capsule())
     }
 }
 
@@ -69,6 +87,15 @@ struct DifficultyBadge: View {
             .padding(.vertical, 3)
             .background(color.opacity(0.15))
             .foregroundStyle(color)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .clipShape(Capsule())
     }
+}
+
+#Preview {
+    VStack(spacing: 12) {
+        SongRowView(song: SongLibrary.songs[0])
+        SongRowView(song: SongLibrary.songs[2])
+    }
+    .padding()
+    .background(Color(.systemGroupedBackground))
 }
