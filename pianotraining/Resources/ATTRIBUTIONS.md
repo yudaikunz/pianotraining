@@ -8,7 +8,6 @@
 |---|---|---|---|---|
 | `bach-minuet-g-intermediate.musicxml` | メヌエット ト長調 BWV Anh.114 | クリスティアン・ペッツォルト（バッハ作と長く伝承） | MuseTrainer 公開楽譜ライブラリ（`webern/mx`） | Public Domain（楽譜の清書も `<rights>Public Domain</rights>` 明記） |
 | `beethoven-elise-intermediate.mxl` | エリーゼのために（全曲） | L.v. ベートーヴェン | MuseTrainer 公開楽譜ライブラリ（`musetrainer/library`） | 楽曲はパブリックドメイン。清書ファイルに著作権表記なし |
-| `beethoven-elise-beginner.mxl` | エリーゼのために（初心者向け簡易版） | L.v. ベートーヴェン | MuseTrainer 公開楽譜ライブラリ（`musetrainer/library`） | 楽曲はパブリックドメイン。清書ファイルに著作権表記なし |
 | `bach-prelude-c-intermediate.mxl` | プレリュード ハ長調 BWV 846 | J.S. バッハ | MuseTrainer 公開楽譜ライブラリ（`musetrainer/library`） | 楽曲はパブリックドメイン。清書ファイルに著作権表記なし |
 | `mozart-turkish-intermediate.mxl` | トルコ行進曲（ピアノソナタ第11番より） | W.A. モーツァルト | MuseTrainer 公開楽譜ライブラリ（`musetrainer/library`） | 楽曲はパブリックドメイン。清書ファイルに著作権表記なし |
 | `debussy-moonlight-intermediate.mxl` | 月の光（ベルガマスク組曲より） | C. ドビュッシー | MuseTrainer 公開楽譜ライブラリ（`musetrainer/library`） | 楽曲はパブリックドメイン。清書ファイルに著作権表記なし |

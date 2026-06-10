@@ -65,7 +65,9 @@ struct SampleArrangements {
         bpm: 100
     )
 
-    /// 初心者・中級向け：右手メロディ（A-Bフレーズ）＋左手の伴奏
+    /// 初心者向け：右手メロディ（A-Bフレーズ）＋左手の伴奏。
+    /// 超初心者と同じ有名テーマ・同じテンポ（bpm 100）で、左手の伴奏だけが加わる。
+    /// 中級は本物の全曲楽譜（`beethoven-elise-intermediate.mxl`）を使う。
     static let furEliseTwoHands = Arrangement(
         notes: furEliseOpening.notes + [
             // 左手伴奏：テーマの和声（イ短調→ホ長調→イ短調）に沿った持続和音の簡略パターン
@@ -213,7 +215,7 @@ struct SampleArrangements {
         bpm: 100
     )
 
-    // MARK: - かえるのうた（カエルの合唱）ハ長調・7小節
+    // MARK: - かえるのうた（カエルの合唱）ハ長調・8小節
 
     /// 超初心者：右手メロディのみ
     static let frogSong = Arrangement(
@@ -234,25 +236,24 @@ struct SampleArrangements {
             PlayedNote(pitch: 67, startBeat: 12.0, duration: 1.0, hand: .right), // ソ
             PlayedNote(pitch: 65, startBeat: 13.0, duration: 1.0, hand: .right), // ファ
             PlayedNote(pitch: 64, startBeat: 14.0, duration: 2.0, hand: .right), // ミ（2拍）
-            // フレーズ3: 8分音符の輪唱部分 C×4 E×4 G×4 E×4
-            PlayedNote(pitch: 60, startBeat: 16.0, duration: 0.5, hand: .right), // ド
-            PlayedNote(pitch: 60, startBeat: 16.5, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 60, startBeat: 17.0, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 60, startBeat: 17.5, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 18.0, duration: 0.5, hand: .right), // ミ
-            PlayedNote(pitch: 64, startBeat: 18.5, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 19.0, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 19.5, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 20.0, duration: 0.5, hand: .right), // ソ
-            PlayedNote(pitch: 67, startBeat: 20.5, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 21.0, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 21.5, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 22.0, duration: 0.5, hand: .right), // ミ
-            PlayedNote(pitch: 64, startBeat: 22.5, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 23.0, duration: 0.5, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 23.5, duration: 0.5, hand: .right),
-            // 最終音
-            PlayedNote(pitch: 60, startBeat: 24.0, duration: 4.0, hand: .right), // ド（4拍）
+            // フレーズ3「ぐわっ ぐわっ ぐわっ ぐわっ」：ド ド ド ド（4分音符・各小節2回）
+            PlayedNote(pitch: 60, startBeat: 16.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 60, startBeat: 18.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 60, startBeat: 20.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 60, startBeat: 22.0, duration: 1.0, hand: .right), // ド
+            // フレーズ4「げろげろげろげろ」：ド ド レ レ ミ ミ ファ ファ（8分音符で順次上行）
+            PlayedNote(pitch: 60, startBeat: 24.0, duration: 0.5, hand: .right), // ド
+            PlayedNote(pitch: 60, startBeat: 24.5, duration: 0.5, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 25.0, duration: 0.5, hand: .right), // レ
+            PlayedNote(pitch: 62, startBeat: 25.5, duration: 0.5, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 26.0, duration: 0.5, hand: .right), // ミ
+            PlayedNote(pitch: 64, startBeat: 26.5, duration: 0.5, hand: .right), // ミ
+            PlayedNote(pitch: 65, startBeat: 27.0, duration: 0.5, hand: .right), // ファ
+            PlayedNote(pitch: 65, startBeat: 27.5, duration: 0.5, hand: .right), // ファ
+            // 「ぐわっ ぐわっ ぐわっ」：ミ レ ド で締めくくる
+            PlayedNote(pitch: 64, startBeat: 28.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 62, startBeat: 29.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 30.0, duration: 2.0, hand: .right), // ド（2拍）
         ],
         bpm: 100
     )
@@ -265,18 +266,19 @@ struct SampleArrangements {
             PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 43, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G2)
             PlayedNote(pitch: 48, startBeat: 16.0, duration: 4.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 20.0, duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3)
         ],
         bpm: 100
     )
 
-    // MARK: - チューリップ ハ長調・ABA'形式（12小節）
+    // MARK: - チューリップ ハ長調・3フレーズ（さいた／ならんだ／どのはな）12小節
 
     /// 超初心者：右手メロディのみ
     static let tulip = Arrangement(
         notes: [
-            // セクションA（前半）
+            // セクションA「さいた さいた チューリップの はなが」（最後はレに着地）
             PlayedNote(pitch: 60, startBeat: 0.0,  duration: 1.0, hand: .right), // ド (C4)
             PlayedNote(pitch: 62, startBeat: 1.0,  duration: 1.0, hand: .right), // レ (D4)
             PlayedNote(pitch: 64, startBeat: 2.0,  duration: 2.0, hand: .right), // ミ（2拍）
@@ -290,33 +292,33 @@ struct SampleArrangements {
             PlayedNote(pitch: 62, startBeat: 12.0, duration: 1.0, hand: .right), // レ
             PlayedNote(pitch: 64, startBeat: 13.0, duration: 1.0, hand: .right), // ミ
             PlayedNote(pitch: 62, startBeat: 14.0, duration: 2.0, hand: .right), // レ（2拍）
-            // セクションB（中間）
-            PlayedNote(pitch: 67, startBeat: 16.0, duration: 1.0, hand: .right), // ソ
-            PlayedNote(pitch: 67, startBeat: 17.0, duration: 1.0, hand: .right), // ソ
-            PlayedNote(pitch: 64, startBeat: 18.0, duration: 1.0, hand: .right), // ミ
-            PlayedNote(pitch: 67, startBeat: 19.0, duration: 1.0, hand: .right), // ソ
-            PlayedNote(pitch: 69, startBeat: 20.0, duration: 1.0, hand: .right), // ラ (A4)
-            PlayedNote(pitch: 69, startBeat: 21.0, duration: 1.0, hand: .right), // ラ
-            PlayedNote(pitch: 67, startBeat: 22.0, duration: 2.0, hand: .right), // ソ（2拍）
-            PlayedNote(pitch: 64, startBeat: 24.0, duration: 1.0, hand: .right), // ミ
+            // セクションA'「ならんだ ならんだ あか しろ きいろ」（最後はドに着地）
+            PlayedNote(pitch: 60, startBeat: 16.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 17.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 18.0, duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 60, startBeat: 20.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 21.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 22.0, duration: 2.0, hand: .right), // ミ（2拍）
+            PlayedNote(pitch: 67, startBeat: 24.0, duration: 1.0, hand: .right), // ソ
             PlayedNote(pitch: 64, startBeat: 25.0, duration: 1.0, hand: .right), // ミ
             PlayedNote(pitch: 62, startBeat: 26.0, duration: 1.0, hand: .right), // レ
-            PlayedNote(pitch: 62, startBeat: 27.0, duration: 1.0, hand: .right), // レ
-            PlayedNote(pitch: 60, startBeat: 28.0, duration: 4.0, hand: .right), // ド（4拍）
-            // セクションA'（後半・同じだが最後の音がドに着地）
-            PlayedNote(pitch: 60, startBeat: 32.0, duration: 1.0, hand: .right), // ド
-            PlayedNote(pitch: 62, startBeat: 33.0, duration: 1.0, hand: .right), // レ
-            PlayedNote(pitch: 64, startBeat: 34.0, duration: 2.0, hand: .right), // ミ（2拍）
-            PlayedNote(pitch: 60, startBeat: 36.0, duration: 1.0, hand: .right), // ド
-            PlayedNote(pitch: 62, startBeat: 37.0, duration: 1.0, hand: .right), // レ
-            PlayedNote(pitch: 64, startBeat: 38.0, duration: 2.0, hand: .right), // ミ（2拍）
-            PlayedNote(pitch: 67, startBeat: 40.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 60, startBeat: 27.0, duration: 1.0, hand: .right), // ド
+            PlayedNote(pitch: 62, startBeat: 28.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 64, startBeat: 29.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 60, startBeat: 30.0, duration: 2.0, hand: .right), // ド（2拍）
+            // セクションB「どの はな みても きれい だ な」（クライマックス・最後に登場）
+            PlayedNote(pitch: 67, startBeat: 32.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 67, startBeat: 33.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 64, startBeat: 34.0, duration: 1.0, hand: .right), // ミ
+            PlayedNote(pitch: 67, startBeat: 35.0, duration: 1.0, hand: .right), // ソ
+            PlayedNote(pitch: 69, startBeat: 36.0, duration: 1.0, hand: .right), // ラ (A4)
+            PlayedNote(pitch: 69, startBeat: 37.0, duration: 1.0, hand: .right), // ラ
+            PlayedNote(pitch: 67, startBeat: 38.0, duration: 2.0, hand: .right), // ソ（2拍）
+            PlayedNote(pitch: 64, startBeat: 40.0, duration: 1.0, hand: .right), // ミ
             PlayedNote(pitch: 64, startBeat: 41.0, duration: 1.0, hand: .right), // ミ
             PlayedNote(pitch: 62, startBeat: 42.0, duration: 1.0, hand: .right), // レ
-            PlayedNote(pitch: 60, startBeat: 43.0, duration: 1.0, hand: .right), // ド
-            PlayedNote(pitch: 62, startBeat: 44.0, duration: 1.0, hand: .right), // レ
-            PlayedNote(pitch: 64, startBeat: 45.0, duration: 1.0, hand: .right), // ミ
-            PlayedNote(pitch: 60, startBeat: 46.0, duration: 2.0, hand: .right), // ド（2拍）
+            PlayedNote(pitch: 62, startBeat: 43.0, duration: 1.0, hand: .right), // レ
+            PlayedNote(pitch: 60, startBeat: 44.0, duration: 4.0, hand: .right), // ド（4拍）
         ],
         bpm: 96
     )
@@ -329,14 +331,14 @@ struct SampleArrangements {
             PlayedNote(pitch: 48, startBeat: 4.0,  duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 43, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G2)
-            // セクションB（16-31）
+            // セクションA'（16-31）
             PlayedNote(pitch: 48, startBeat: 16.0, duration: 4.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2)
+            PlayedNote(pitch: 48, startBeat: 20.0, duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3)
-            // セクションA'（32-47）
+            // セクションB（32-47）
             PlayedNote(pitch: 48, startBeat: 32.0, duration: 4.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 48, startBeat: 36.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 43, startBeat: 36.0, duration: 4.0, hand: .left), // ソ (G2)
             PlayedNote(pitch: 48, startBeat: 40.0, duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 44.0, duration: 4.0, hand: .left), // ド (C3)
         ],
