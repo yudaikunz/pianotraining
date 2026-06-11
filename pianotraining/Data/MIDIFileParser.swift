@@ -172,7 +172,8 @@ struct MIDIFileParser {
     }
 }
 
-/// MIDIバイナリデータを先頭から順に読み進めるヘルパー
+/// MIDIバイナリデータを先頭から順に読み進めるヘルパー。
+/// 破損・切り詰められたファイルでもクラッシュしないよう、末尾を越える読み出しは0／空を返す。
 private struct MIDIByteReader {
     let data: Data
     private(set) var offset = 0
@@ -180,20 +181,27 @@ private struct MIDIByteReader {
     init(data: Data) { self.data = data }
 
     mutating func readByte() -> UInt8 {
+        guard offset < data.count else {
+            offset += 1
+            return 0
+        }
         let byte = data[data.startIndex + offset]
         offset += 1
         return byte
     }
 
     func peekByte() -> UInt8 {
-        data[data.startIndex + offset]
+        guard offset < data.count else { return 0 }
+        return data[data.startIndex + offset]
     }
 
     mutating func readBytes(count: Int) -> [UInt8] {
-        let start = data.startIndex + offset
-        let result = Array(data[start..<start + count])
+        let start = min(offset, data.count)
+        let end = min(offset + count, data.count)
         offset += count
-        return result
+        guard start < end else { return [] }
+        let base = data.startIndex
+        return Array(data[(base + start)..<(base + end)])
     }
 
     mutating func readString(length: Int) -> String {
@@ -201,13 +209,11 @@ private struct MIDIByteReader {
     }
 
     mutating func readUInt16() -> UInt16 {
-        let bytes = readBytes(count: 2)
-        return (UInt16(bytes[0]) << 8) | UInt16(bytes[1])
+        (UInt16(readByte()) << 8) | UInt16(readByte())
     }
 
     mutating func readUInt32() -> UInt32 {
-        let bytes = readBytes(count: 4)
-        return (UInt32(bytes[0]) << 24) | (UInt32(bytes[1]) << 16) | (UInt32(bytes[2]) << 8) | UInt32(bytes[3])
+        (UInt32(readByte()) << 24) | (UInt32(readByte()) << 16) | (UInt32(readByte()) << 8) | UInt32(readByte())
     }
 
     /// MIDIの可変長数値（Variable Length Quantity）を読み取る

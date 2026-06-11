@@ -8,9 +8,16 @@ struct SongRowView: View {
             songIcon
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(song.title)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(song.title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
 
                 Text(song.composer)
                     .font(.subheadline)
@@ -36,19 +43,28 @@ struct SongRowView: View {
                 .padding(.top, 2)
             }
         }
-        .padding(14)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+                .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
+        )
     }
 
     private var songIcon: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(song.period.color.opacity(0.15))
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [song.period.color.opacity(0.25), song.period.color.opacity(0.08)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
                 .frame(width: 50, height: 50)
             Image(systemName: song.iconName)
                 .font(.system(size: 20, weight: .medium))
-                .foregroundStyle(song.period.color)
+                .foregroundStyle(song.period.color.gradient)
         }
     }
 }

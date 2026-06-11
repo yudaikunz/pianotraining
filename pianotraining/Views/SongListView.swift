@@ -77,9 +77,11 @@ struct SongListView: View {
             Spacer()
             Image(systemName: "music.note.list")
                 .font(.system(size: 56))
-                .foregroundStyle(.secondary)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(Color.accentColor)
             Text("曲が見つかりません")
                 .font(.title3)
+                .fontWeight(.medium)
                 .foregroundStyle(.secondary)
             Spacer()
         }

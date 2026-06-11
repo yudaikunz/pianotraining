@@ -39,7 +39,7 @@ private struct WhiteKeyView: View {
                 .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(isHighlighted ? Color.accentColor : Color.white)
+        .background(isHighlighted ? AnyShapeStyle(Color.accentColor.gradient) : AnyShapeStyle(Color.white))
         .overlay(Rectangle().stroke(Color(.systemGray4), lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 4))
         .animation(.easeOut(duration: 0.12), value: isHighlighted)
@@ -51,7 +51,7 @@ private struct BlackKeyView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 3)
-            .fill(isHighlighted ? Color.orange : Color.black)
+            .fill(isHighlighted ? AnyShapeStyle(Color.orange.gradient) : AnyShapeStyle(Color.black.gradient))
             .animation(.easeOut(duration: 0.12), value: isHighlighted)
     }
 }

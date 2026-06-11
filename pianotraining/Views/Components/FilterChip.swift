@@ -9,16 +9,24 @@ struct FilterChip: View {
         Button(action: action) {
             Text(title)
                 .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
+                .fontWeight(isSelected ? .semibold : .medium)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                .background {
+                    if isSelected {
+                        Capsule()
+                            .fill(Color.accentColor.gradient)
+                            .shadow(color: Color.accentColor.opacity(0.35), radius: 5, x: 0, y: 2)
+                    } else {
+                        Capsule()
+                            .fill(Color(.secondarySystemBackground))
+                            .overlay(
+                                Capsule()
+                                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+                            )
+                    }
+                }
                 .foregroundStyle(isSelected ? Color.white : Color.primary)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .strokeBorder(Color.accentColor.opacity(isSelected ? 0 : 0.2), lineWidth: 1)
-                )
         }
         .buttonStyle(.plain)
     }

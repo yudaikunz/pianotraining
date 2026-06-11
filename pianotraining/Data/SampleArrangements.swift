@@ -484,12 +484,31 @@ struct SampleArrangements {
     private static let midiDemoArrangement: Arrangement? =
         MIDIFileParser.loadArrangement(resourceName: "sample_melody", fallbackHand: .right)
 
-    /// 曲ID・難易度から演奏データを取得する。
+    /// パース済み演奏データのキャッシュ。
+    /// SwiftUIの NavigationLink は遷移前に destination のViewを複数回初期化することがあり、
+    /// そのたびにMusicXML/MXL/MIDIをパースし直すと無駄な負荷がかかるため、
+    /// 「曲 × 難易度」ごとに一度だけパースして以降は使い回す。
+    private static var cache: [String: Arrangement] = [:]
+    private static let cacheLock = NSLock()
+
+    /// 曲ID・難易度から演奏データを取得する（結果はキャッシュされる）。
+    static func arrangement(for songID: String, difficulty: Difficulty) -> Arrangement {
+        let cacheKey = "\(songID)-\(difficulty.resourceKey)"
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if let cached = cache[cacheKey] {
+            return cached
+        }
+        let result = loadArrangement(for: songID, difficulty: difficulty)
+        cache[cacheKey] = result
+        return result
+    }
+
     /// `Resources/` に以下のファイルがあれば、その優先順位で読み込む（本物の楽譜への切り替え用）:
     ///   1. `<曲ID>-<難易度キー>.musicxml`（楽譜の標準形式。右手/左手・音名・調号が正確）
     ///   2. `<曲ID>-<難易度キー>.mid`（MIDI。手は推測、音名の区別なし）
     /// いずれも無ければ手書きのサンプル／フォールバックを返す。
-    static func arrangement(for songID: String, difficulty: Difficulty) -> Arrangement {
+    private static func loadArrangement(for songID: String, difficulty: Difficulty) -> Arrangement {
         let resourceName = "\(songID)-\(difficulty.resourceKey)"
 
         if let fromXML = MusicXMLParser.loadArrangement(resourceName: resourceName) {

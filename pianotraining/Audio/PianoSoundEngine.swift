@@ -6,8 +6,27 @@ final class PianoSoundEngine {
     private let engine = AVAudioEngine()
     private let sampler = AVAudioUnitSampler()
     private var isReady = false
+    private var setupAttempted = false
 
-    init() {
+    deinit {
+        if setupAttempted {
+            engine.stop()
+        }
+    }
+
+    /// オーディオセッションの有効化と音源の読み込みは、実際に最初の音を鳴らす直前まで遅らせる。
+    /// SwiftUIの NavigationLink は遷移前に destination のViewを初期化するため、
+    /// init で準備してしまうと「練習画面を開いてもいないのに他アプリの音楽が中断され、
+    /// オーディオエンジンが複数同時に起動する」という不安定な挙動になる。
+    private func setupIfNeeded() {
+        guard !setupAttempted else {
+            // 電話や他アプリの割り込みでエンジンが停止した場合は再開を試みる
+            if isReady && !engine.isRunning {
+                try? engine.start()
+            }
+            return
+        }
+        setupAttempted = true
         configureAudioSession()
         engine.attach(sampler)
         engine.connect(sampler, to: engine.mainMixerNode, format: nil)
@@ -43,6 +62,7 @@ final class PianoSoundEngine {
     }
 
     func noteOn(pitch: Int, velocity: UInt8 = 75) {
+        setupIfNeeded()
         guard isReady, let note = midiNote(from: pitch) else { return }
         sampler.startNote(note, withVelocity: velocity, onChannel: 0)
     }

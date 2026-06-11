@@ -53,12 +53,18 @@ struct DifficultyView: View {
                 }
                 Spacer()
                 ZStack {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(song.period.color.opacity(0.15))
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [song.period.color.opacity(0.25), song.period.color.opacity(0.08)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .frame(width: 52, height: 52)
                     Image(systemName: song.iconName)
                         .font(.system(size: 24, weight: .medium))
-                        .foregroundStyle(song.period.color)
+                        .foregroundStyle(song.period.color.gradient)
                 }
             }
 
@@ -78,9 +84,12 @@ struct DifficultyView: View {
                 }
             }
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+                .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
+        )
         .padding(.horizontal)
     }
 }
@@ -112,11 +121,17 @@ struct DifficultyCard: View {
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(color.opacity(0.12))
+                        .fill(
+                            LinearGradient(
+                                colors: [color.opacity(0.25), color.opacity(0.08)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .frame(width: 52, height: 52)
                     Image(systemName: iconName)
                         .font(.system(size: 26))
-                        .foregroundStyle(color)
+                        .foregroundStyle(color.gradient)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -155,11 +170,14 @@ struct DifficultyCard: View {
                 .foregroundStyle(.secondary)
         }
         .padding(16)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+                .shadow(color: color.opacity(0.10), radius: 8, x: 0, y: 3)
+        )
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(color.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(color.opacity(0.25), lineWidth: 1)
         )
     }
 

@@ -95,10 +95,15 @@ struct PracticeView: View {
                 stopAllSound()
                 return
             }
-            let beatsPerTick = 0.05 * (arrangement.bpm / 60)
+            // Task.sleep は指定時間より長く待つことがあるため、1ティックごとに固定量を
+            // 加算する方式だと曲が進むほどテンポが遅れていく。
+            // 再生開始時刻からの経過実時間で拍位置を計算し、ドリフトを防ぐ。
+            let beatsPerSecond = arrangement.bpm / 60
+            let startBeat = currentBeat
+            let startDate = Date()
             while isPlaying && !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 50_000_000)
-                currentBeat += beatsPerTick
+                currentBeat = startBeat + Date().timeIntervalSince(startDate) * beatsPerSecond
                 if currentBeat >= arrangement.totalBeats {
                     currentBeat = arrangement.totalBeats
                     isPlaying = false
@@ -197,31 +202,41 @@ struct PracticeView: View {
     // MARK: - 再生コントロール
 
     private var controls: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 14) {
             ProgressView(value: currentBeat, total: max(arrangement.totalBeats, 0.01))
                 .tint(difficultyColor)
                 .padding(.horizontal, 32)
 
-            HStack(spacing: 28) {
+            HStack(spacing: 24) {
                 Button {
                     currentBeat = 0
                     isPlaying = false
                     stopAllSound()
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
-                        .font(.title2)
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .frame(width: 52, height: 52)
+                        .background(Circle().fill(Color(.secondarySystemBackground)))
                 }
 
                 Button {
                     if currentBeat >= arrangement.totalBeats { currentBeat = 0 }
                     isPlaying.toggle()
                 } label: {
-                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.system(size: 56))
-                        .foregroundStyle(difficultyColor)
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundStyle(.white)
+                        // 再生アイコン（三角形）は光学的に左へ寄って見えるため、わずかに右へ寄せて中心を合わせる
+                        .offset(x: isPlaying ? 0 : 2)
+                        .frame(width: 72, height: 72)
+                        .background(
+                            Circle()
+                                .fill(difficultyColor.gradient)
+                                .shadow(color: difficultyColor.opacity(0.35), radius: 10, x: 0, y: 4)
+                        )
                 }
             }
-            .foregroundStyle(.primary)
         }
     }
 }
