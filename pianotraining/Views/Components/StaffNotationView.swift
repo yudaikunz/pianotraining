@@ -130,9 +130,9 @@ struct StaffNotationView: View {
 
     private var clefs: some View {
         VStack(spacing: 0) {
-            clefGlyph("𝄞", color: .blue, label: "右手", fontSize: lineSpacing * 4.3)
+            clefGlyph("𝄞", color: Hand.right.color, label: "右手", fontSize: lineSpacing * 4.3)
                 .frame(height: lineSpacing * 4 + lineSpacing * 2.5, alignment: .top)
-            clefGlyph("𝄢", color: .red, label: "左手", fontSize: lineSpacing * 2.5)
+            clefGlyph("𝄢", color: Hand.left.color, label: "左手", fontSize: lineSpacing * 2.5)
                 .frame(height: lineSpacing * 4 + lineSpacing * 2.5, alignment: .top)
         }
         .padding(.top, trebleTopY - lineSpacing * 1.7)
@@ -195,7 +195,7 @@ struct StaffNotationView: View {
     @ViewBuilder
     private func noteView(for note: PlayedNote, x: CGFloat, isActive: Bool, chordSize: Int) -> some View {
         let y = yPosition(for: note.pitch)
-        let baseColor: Color = note.hand == .right ? .blue : .red
+        let baseColor = note.hand.color
         let color: Color = isActive ? .orange : baseColor
         // 3音以上の和音で再生中はラベルを隠してノートヘッドのみ表示し視認性を確保
         let showLabel = isActive || !isPlaying || chordSize < 3

@@ -35,7 +35,7 @@ struct FallingNotesView: View {
         let centerY = bottomY - blockHeight / 2
         let centerX = layout.centerX(for: note.pitch)
         let width = layout.isWhiteKey(note.pitch) ? layout.whiteKeyWidth - 6 : layout.blackKeyWidth - 2
-        let color: Color = note.hand == .right ? .blue : .red
+        let color = note.hand.color
 
         return RoundedRectangle(cornerRadius: 5)
             .fill(color.gradient)
@@ -65,7 +65,7 @@ struct FallingNotesView: View {
     VStack(spacing: 4) {
         FallingNotesView(arrangement: SampleArrangements.furEliseOpening, currentBeat: 1.2, layout: layout)
             .frame(height: 220)
-        PianoKeyboardView(layout: layout, highlightedPitches: [76])
+        PianoKeyboardView(layout: layout, highlightedKeys: [76: .right])
     }
     .padding()
 }

@@ -39,10 +39,18 @@ struct PracticeView: View {
         return (lowestC, octaveCount)
     }
 
-    private var highlightedPitches: Set<Int> {
-        Set(arrangement.notes
-            .filter { currentBeat >= $0.startBeat && currentBeat < $0.startBeat + $0.duration }
-            .map { $0.pitch })
+    /// 今鳴っている鍵（MIDIノート番号 → 弾く手）。
+    /// 鍵盤のハイライトを楽譜・落下ノーツと同じ手の色で光らせるために使う。
+    /// 同じ鍵を両手で同時に弾く場合は右手の色を優先する。
+    private var highlightedKeys: [Int: Hand] {
+        var result: [Int: Hand] = [:]
+        for note in arrangement.notes
+        where currentBeat >= note.startBeat && currentBeat < note.startBeat + note.duration {
+            if note.hand == .right || result[note.pitch] == nil {
+                result[note.pitch] = note.hand
+            }
+        }
+        return result
     }
 
     private var difficultyColor: Color {
@@ -161,9 +169,9 @@ struct PracticeView: View {
 
     private var handLegend: some View {
         HStack(spacing: 20) {
-            legendItem(color: .blue, label: "右手（ト音記号）")
+            legendItem(color: Hand.right.color, label: "右手（ト音記号）")
             if hasLeftHandPart {
-                legendItem(color: .red, label: "左手（ヘ音記号）")
+                legendItem(color: Hand.left.color, label: "左手（ヘ音記号）")
             }
         }
     }
@@ -193,7 +201,7 @@ struct PracticeView: View {
         return VStack(spacing: 6) {
             FallingNotesView(arrangement: arrangement, currentBeat: currentBeat, layout: layout)
                 .frame(width: keyboardWidth, height: isLandscape ? 120 : 168)
-            PianoKeyboardView(layout: layout, highlightedPitches: highlightedPitches)
+            PianoKeyboardView(layout: layout, highlightedKeys: highlightedKeys)
         }
         .frame(width: keyboardWidth)
         .padding(.horizontal, 16)

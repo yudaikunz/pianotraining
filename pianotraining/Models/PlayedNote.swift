@@ -1,9 +1,15 @@
 import Foundation
+import SwiftUI
 
 /// 演奏する手
 enum Hand: String {
     case right = "右手"
     case left = "左手"
+
+    /// 楽譜・落下ノーツ・鍵盤ハイライトで共通して使う手の色（右手＝青 / 左手＝赤）
+    var color: Color {
+        self == .right ? .blue : .red
+    }
 }
 
 /// 1つの音符（MIDIノート番号ベース）
