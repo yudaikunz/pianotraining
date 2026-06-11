@@ -85,7 +85,7 @@ struct PracticeView: View {
                             currentBeat = beat
                         }
                     )
-                    .frame(height: isLandscape ? 192 : 248)
+                    .frame(height: isLandscape ? 208 : 264)
                     .padding(.horizontal)
 
                     practiceArea(keyboardWidth: keyboardWidth, isLandscape: isLandscape)

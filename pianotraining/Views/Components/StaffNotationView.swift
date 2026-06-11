@@ -28,8 +28,8 @@ struct StaffNotationView: View {
     private let middleLineStep = 4
 
     // 高音側の音符・臨時記号・ラベルが上端で見切れないよう、上に余白を多めに確保する
-    // （加線2本分＝C6・D6あたりまでをカバーする）
-    private var trebleTopY: CGFloat { 40 }
+    // （加線4本分＝G6・A6あたりまでをカバーする）
+    private var trebleTopY: CGFloat { 56 }
     private var trebleBottomY: CGFloat { trebleTopY + lineSpacing * 4 }
     private var bassTopY: CGFloat { trebleBottomY + lineSpacing * 5 }
     private var bassBottomY: CGFloat { bassTopY + lineSpacing * 4 }
