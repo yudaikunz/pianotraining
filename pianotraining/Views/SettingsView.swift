@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @AppStorage(AppSettings.themeKey) private var theme: ThemeOption = .system
+    @AppStorage(AppSettings.rightHandColorKey) private var rightHandColor: HandColorOption = .blue
+    @AppStorage(AppSettings.leftHandColorKey) private var leftHandColor: HandColorOption = .red
+    @AppStorage(AppSettings.playbackSpeedKey) private var playbackSpeed = 1.0
+
     var body: some View {
         Form {
             Section {
@@ -30,6 +35,39 @@ struct SettingsView: View {
                     }
                 }
                 .padding(.vertical, 4)
+            }
+
+            Section {
+                Picker("カラーテーマ", selection: $theme) {
+                    ForEach(ThemeOption.allCases) { option in
+                        Text(option.label).tag(option)
+                    }
+                }
+
+                Picker("右手の色", selection: $rightHandColor) {
+                    ForEach(HandColorOption.allCases) { option in
+                        handColorRow(option)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+
+                Picker("左手の色", selection: $leftHandColor) {
+                    ForEach(HandColorOption.allCases) { option in
+                        handColorRow(option)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+
+                Picker("再生スピード", selection: $playbackSpeed) {
+                    ForEach(AppSettings.playbackSpeedOptions, id: \.self) { speed in
+                        Text(speed == 1.0 ? "標準 ×1" : AppSettings.speedText(speed))
+                            .tag(speed)
+                    }
+                }
+            } header: {
+                Text("表示と再生")
+            } footer: {
+                Text("右手・左手の色は、楽譜・落ちてくる音符・鍵盤のハイライトの色分けに使われます。見分けやすいよう左右で別の色を選ぶのがおすすめです。再生スピードはすべての曲に適用されます。")
             }
 
             Section("注意書き") {
@@ -73,6 +111,17 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("設定")
+    }
+
+    /// 手の色の選択肢1行分（色見本の丸＋色名）
+    private func handColorRow(_ option: HandColorOption) -> some View {
+        Label {
+            Text(option.label)
+        } icon: {
+            Image(systemName: "circle.fill")
+                .foregroundStyle(option.color.gradient)
+        }
+        .tag(option)
     }
 
     private static let disclaimers: [String] = [

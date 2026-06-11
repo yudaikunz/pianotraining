@@ -6,9 +6,13 @@ enum Hand: String {
     case right = "右手"
     case left = "左手"
 
-    /// 楽譜・落下ノーツ・鍵盤ハイライトで共通して使う手の色（右手＝青 / 左手＝赤）
+    /// 楽譜・落下ノーツ・鍵盤ハイライトで共通して使う手の色。
+    /// 設定画面で変更でき、既定は右手＝青 / 左手＝赤。
     var color: Color {
-        self == .right ? .blue : .red
+        switch self {
+        case .right: return AppSettings.rightHandColor.color
+        case .left:  return AppSettings.leftHandColor.color
+        }
     }
 }
 

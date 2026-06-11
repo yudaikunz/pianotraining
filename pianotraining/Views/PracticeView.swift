@@ -13,6 +13,9 @@ struct PracticeView: View {
     @State private var isPlaying = false
     @State private var soundingNoteIDs: Set<UUID> = []
 
+    /// 設定画面で選んだ再生スピード（テンポ倍率）。全曲共通で適用される
+    @AppStorage(AppSettings.playbackSpeedKey) private var playbackSpeed = 1.0
+
     private let soundEngine = PianoSoundEngine()
 
     init(song: Song, difficulty: Difficulty) {
@@ -106,7 +109,7 @@ struct PracticeView: View {
             // Task.sleep は指定時間より長く待つことがあるため、1ティックごとに固定量を
             // 加算する方式だと曲が進むほどテンポが遅れていく。
             // 再生開始時刻からの経過実時間で拍位置を計算し、ドリフトを防ぐ。
-            let beatsPerSecond = arrangement.bpm / 60
+            let beatsPerSecond = arrangement.bpm / 60 * max(playbackSpeed, 0.1)
             let startBeat = currentBeat
             let startDate = Date()
             while isPlaying && !Task.isCancelled {
@@ -214,6 +217,14 @@ struct PracticeView: View {
             ProgressView(value: currentBeat, total: max(arrangement.totalBeats, 0.01))
                 .tint(difficultyColor)
                 .padding(.horizontal, 32)
+
+            // 標準以外のスピードで再生中であることが分かるよう表示する（設定画面で変更可能）
+            if playbackSpeed != 1.0 {
+                Text("再生スピード \(AppSettings.speedText(playbackSpeed))")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+            }
 
             HStack(spacing: 24) {
                 Button {
