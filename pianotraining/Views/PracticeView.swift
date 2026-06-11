@@ -84,7 +84,7 @@ struct PracticeView: View {
                     controls
                 }
                 .padding(.top, 12)
-                .padding(.bottom, 24)
+                .padding(.bottom, isLandscape ? 24 : 56)
                 .frame(minHeight: geo.size.height, alignment: .top)
             }
         }
