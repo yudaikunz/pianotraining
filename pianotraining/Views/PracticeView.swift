@@ -73,7 +73,7 @@ struct PracticeView: View {
             let keyboardWidth = max(geo.size.width - 32, 200)
 
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: isLandscape ? 10 : 16) {
+                VStack(spacing: isLandscape ? 10 : 12) {
                     header
 
                     StaffNotationView(
@@ -95,7 +95,7 @@ struct PracticeView: View {
                     controls
                 }
                 .padding(.top, 12)
-                .padding(.bottom, isLandscape ? 24 : 56)
+                .padding(.bottom, isLandscape ? 24 : 40)
                 .frame(minHeight: geo.size.height, alignment: .top)
             }
         }
@@ -152,21 +152,23 @@ struct PracticeView: View {
     // MARK: - 共通ヘッダー
 
     private var header: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             Text(song.title)
                 .font(.title2)
                 .fontWeight(.bold)
-            Text(song.composer)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Text(difficulty.rawValue)
-                .font(.caption)
-                .fontWeight(.medium)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 4)
-                .background(difficultyColor.opacity(0.15))
-                .foregroundStyle(difficultyColor)
-                .clipShape(Capsule())
+            HStack(spacing: 8) {
+                Text(song.composer)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(difficulty.rawValue)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 3)
+                    .background(difficultyColor.opacity(0.15))
+                    .foregroundStyle(difficultyColor)
+                    .clipShape(Capsule())
+            }
         }
     }
 
