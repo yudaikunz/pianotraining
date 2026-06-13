@@ -14,6 +14,16 @@
 
 - `sample_melody.mid` … 動作確認用の自作MIDIサンプル。
 
+## 音源ファイル
+
+| ファイル | 内容 | 出典 | ライセンス |
+|---|---|---|---|
+| `gs_instruments.dls` | General MIDI ピアノ音色を含むDLSサウンドバンク | Appleサンプルコード「UsingAVAudioEngineforPlaybackMixingandRecording」付属ファイル | Apple Sample Code License（無改変での再配布を許諾。本ファイルは無改変のまま同梱） |
+
+- iOS標準搭載のDLSサウンドバンク（`/System/Library/Components/CoreAudio.component/...`）は
+  実機の一部バージョンで参照できず無音になる問題があったため、Appleが公式サンプルコードとして
+  配布している同一の音源ファイルをアプリに同梱して読み込むように変更した。
+
 ## 補足
 - ベートーヴェン（1827年没）・ペッツォルト（1735年没）の作品は世界中で著作権が消滅しています。
 - 楽譜の「浄書（タイプセット）」自体に新たな著作権が発生するかは国により解釈が分かれますが、

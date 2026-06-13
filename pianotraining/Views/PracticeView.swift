@@ -86,37 +86,44 @@ struct PracticeView: View {
             let isLandscape = geo.size.width > geo.size.height
             let keyboardWidth = max(geo.size.width - 32, 200)
 
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: isLandscape ? 10 : 12) {
-                    header
+            // iPhoneでは再生ボタンがスクロールしないと届かない位置にあると押しづらいため、
+            // 再生コントロールはスクロール領域の外（画面下部に固定）に配置する。
+            VStack(spacing: 0) {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: isLandscape ? 10 : 12) {
+                        header
 
-                    if let message = soundEngine.diagnosticMessage {
-                        diagnosticBanner(message: message)
+                        if let message = soundEngine.diagnosticMessage {
+                            diagnosticBanner(message: message)
+                        }
+
+                        StaffNotationView(
+                            arrangement: arrangement,
+                            currentBeat: currentBeat,
+                            isPlaying: isPlaying,
+                            onBeatDragged: { beat in
+                                guard !isPlaying else { return }
+                                currentBeat = beat
+                            },
+                            chordInfos: chordInfos,
+                            scale: staffScale
+                        )
+                        .frame(height: (isLandscape ? 208 : 264) * staffScale)
+                        .padding(.horizontal)
+
+                        practiceArea(keyboardWidth: keyboardWidth, isLandscape: isLandscape)
+
+                        handLegend
                     }
-
-                    StaffNotationView(
-                        arrangement: arrangement,
-                        currentBeat: currentBeat,
-                        isPlaying: isPlaying,
-                        onBeatDragged: { beat in
-                            guard !isPlaying else { return }
-                            currentBeat = beat
-                        },
-                        chordInfos: chordInfos,
-                        scale: staffScale
-                    )
-                    .frame(height: (isLandscape ? 208 : 264) * staffScale)
-                    .padding(.horizontal)
-
-                    practiceArea(keyboardWidth: keyboardWidth, isLandscape: isLandscape)
-
-                    handLegend
-
-                    controls
+                    .padding(.top, 12)
+                    .padding(.bottom, 12)
                 }
-                .padding(.top, 12)
-                .padding(.bottom, isLandscape ? 24 : 40)
-                .frame(minHeight: geo.size.height, alignment: .top)
+
+                Divider()
+                controls
+                    .padding(.top, 12)
+                    .padding(.bottom, isLandscape ? 12 : 8)
+                    .background(Color(.systemBackground))
             }
         }
         .navigationTitle("練習")

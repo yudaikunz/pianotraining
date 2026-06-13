@@ -79,10 +79,20 @@ final class PianoSoundEngine: ObservableObject {
         }
     }
 
-    /// iOS / iPadOS に標準搭載されているDLSサウンドバンクからグランドピアノ音色を読み込む。
+    /// アプリにバンドルしたDLSサウンドバンク（gs_instruments.dls）からグランドピアノ音色を読み込む。
     /// プログラム0・バンク121（General MIDI標準のピアノ系バンク）を指定。
+    ///
+    /// 以前はiOS標準搭載のシステムパス（/System/Library/Components/...）を直接参照していたが、
+    /// 実機（iPhone 16 Pro / iOS 18系）ではそのパスが存在せず Error -43（File Not Found）で
+    /// 読み込みに失敗し、無音のままになる問題があった。同じGM音源バンクをアプリにバンドルし、
+    /// Bundle経由で確実に読み込めるようにした。
     private func loadPianoSound() {
-        let bankURL = URL(fileURLWithPath: "/System/Library/Components/CoreAudio.component/Contents/Resources/gs_instruments.dls")
+        guard let bankURL = Bundle.main.url(forResource: "gs_instruments", withExtension: "dls") else {
+            let message = "ピアノ音源ファイル（gs_instruments.dls）がアプリ内に見つかりませんでした"
+            print(message)
+            diagnosticMessage = message
+            return
+        }
         do {
             try sampler.loadSoundBankInstrument(at: bankURL, program: 0, bankMSB: 0x79, bankLSB: 0x00)
             try engine.start()
