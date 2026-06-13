@@ -8,6 +8,9 @@ struct PracticeView: View {
     /// `PlayedNote.id`（UUID）が毎回変わって、落ちてくる音符と楽譜の表示が
     /// ちぐはぐに見える・発音管理がずれる原因になるため、初期化時に一度だけ確定する。
     let arrangement: Arrangement
+    /// 五線譜の和音レイアウト。currentBeat に依存しないので init で一度だけ計算し、
+    /// 再生中（20Hz）の body 再評価のたびに全音符をグループ化／ソートし直すのを防ぐ。
+    let chordInfos: [UUID: ChordInfo]
 
     @State private var currentBeat: Double = 0
     @State private var isPlaying = false
@@ -21,7 +24,9 @@ struct PracticeView: View {
     init(song: Song, difficulty: Difficulty) {
         self.song = song
         self.difficulty = difficulty
-        self.arrangement = SampleArrangements.arrangement(for: song.id, difficulty: difficulty)
+        let arrangement = SampleArrangements.arrangement(for: song.id, difficulty: difficulty)
+        self.arrangement = arrangement
+        self.chordInfos = StaffNotationView.computeChordInfos(for: arrangement.notes)
     }
 
     private var hasLeftHandPart: Bool {
@@ -83,7 +88,8 @@ struct PracticeView: View {
                         onBeatDragged: { beat in
                             guard !isPlaying else { return }
                             currentBeat = beat
-                        }
+                        },
+                        chordInfos: chordInfos
                     )
                     .frame(height: isLandscape ? 208 : 264)
                     .padding(.horizontal)
@@ -101,6 +107,11 @@ struct PracticeView: View {
         }
         .navigationTitle("練習")
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            // 練習画面を離れたらエンジンとオーディオセッションを解放し、
+            // 他アプリの音楽が中断・音量低下されたままにならないようにする
+            soundEngine.teardown()
+        }
         .task(id: isPlaying) {
             guard isPlaying else {
                 stopAllSound()

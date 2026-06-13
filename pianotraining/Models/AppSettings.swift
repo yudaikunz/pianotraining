@@ -9,8 +9,13 @@ enum AppSettings {
     static let leftHandColorKey = "settings.leftHandColor"
     static let playbackSpeedKey = "settings.playbackSpeed"
 
-    /// 再生スピード（テンポ倍率）の選択肢
-    static let playbackSpeedOptions: [Double] = [0.5, 0.75, 1.0, 1.25, 1.5]
+    /// 再生スピード（テンポ倍率）の選択肢。
+    /// 難所をゆっくりさらいたい／少しだけ速くしたい、どちらにも対応できるよう細かく刻む。
+    static let playbackSpeedOptions: [Double] = [
+        0.25, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9,
+        1.0,
+        1.1, 1.25, 1.4, 1.5, 1.75, 2.0
+    ]
 
     /// 右手パートの表示色（楽譜・落下ノーツ・鍵盤ハイライト共通）
     static var rightHandColor: HandColorOption {

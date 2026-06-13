@@ -5,12 +5,27 @@ import AVFoundation
 final class PianoSoundEngine {
     private let engine = AVAudioEngine()
     private let sampler = AVAudioUnitSampler()
+    /// 音源の読み込みとエンジン起動まで完了し、発音できる状態か
     private var isReady = false
-    private var setupAttempted = false
+    /// オーディオグラフ（セッション＋ノード接続）を構成済みか。
+    /// ノードの接続は一度きりにする必要がある（二重 attach はクラッシュの原因）。
+    private var graphConfigured = false
+    /// 現在発音中のMIDIノート。一括停止で実際に鳴っている音だけを止めるために保持する。
+    private var soundingNotes: Set<UInt8> = []
 
     deinit {
-        if setupAttempted {
-            engine.stop()
+        teardown()
+    }
+
+    /// 練習画面を離れたら、エンジンを止めてオーディオセッションを解放する。
+    /// 解放しないと、他アプリ（音楽など）が中断・音量低下されたままになる。
+    func teardown() {
+        guard graphConfigured else { return }
+        engine.stop()
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("オーディオセッションの解放に失敗しました: \(error)")
         }
     }
 
@@ -19,22 +34,25 @@ final class PianoSoundEngine {
     /// init で準備してしまうと「練習画面を開いてもいないのに他アプリの音楽が中断され、
     /// オーディオエンジンが複数同時に起動する」という不安定な挙動になる。
     private func setupIfNeeded() {
-        guard !setupAttempted else {
-            // 電話や他アプリの割り込みでエンジンが停止した場合は再開を試みる
-            if isReady && !engine.isRunning {
-                try? engine.start()
-            }
-            return
+        if !graphConfigured {
+            configureAudioSession()
+            engine.attach(sampler)
+            engine.connect(sampler, to: engine.mainMixerNode, format: nil)
+            // 和音や両手パートで複数の音が同時に重なると、各ボイスの音量が単純に
+            // 加算されて出力上限（0dBFS）を超え、音割れ（クリッピング）が起きる。
+            // 出力にヘッドルームを持たせて、重なっても歪まないようにする。
+            engine.mainMixerNode.outputVolume = 0.6
+            graphConfigured = true
         }
-        setupAttempted = true
-        configureAudioSession()
-        engine.attach(sampler)
-        engine.connect(sampler, to: engine.mainMixerNode, format: nil)
-        // 和音や両手パートで複数の音が同時に重なると、各ボイスの音量が単純に
-        // 加算されて出力上限（0dBFS）を超え、音割れ（クリッピング）が起きる。
-        // 出力にヘッドルームを持たせて、重なっても歪まないようにする。
-        engine.mainMixerNode.outputVolume = 0.6
-        loadPianoSound()
+
+        if !isReady {
+            // 初回の音源読み込みに失敗していても、次に音を鳴らすときに再試行する
+            // （一時的な失敗で以降ずっと無音になるのを防ぐ）。
+            loadPianoSound()
+        } else if !engine.isRunning {
+            // 電話や他アプリの割り込みでエンジンが停止した場合は再開を試みる
+            try? engine.start()
+        }
     }
 
     /// マナーモード（消音スイッチ）がオンでも練習中の音が聞こえるよう再生用カテゴリを設定する
@@ -65,19 +83,22 @@ final class PianoSoundEngine {
         setupIfNeeded()
         guard isReady, let note = midiNote(from: pitch) else { return }
         sampler.startNote(note, withVelocity: velocity, onChannel: 0)
+        soundingNotes.insert(note)
     }
 
     func noteOff(pitch: Int) {
         guard isReady, let note = midiNote(from: pitch) else { return }
         sampler.stopNote(note, onChannel: 0)
+        soundingNotes.remove(note)
     }
 
     /// 再生の停止・モード切り替え・リセット時に、鳴りっぱなしの音を一括で止める
     func stopAllNotes() {
         guard isReady else { return }
-        for note: UInt8 in 0...127 {
+        for note in soundingNotes {
             sampler.stopNote(note, onChannel: 0)
         }
+        soundingNotes.removeAll()
     }
 
     private func midiNote(from pitch: Int) -> UInt8? {

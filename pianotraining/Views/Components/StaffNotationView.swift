@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct ChordInfo {
+struct ChordInfo {
     let size: Int
     let xOffset: CGFloat
 }
@@ -13,12 +13,16 @@ struct StaffNotationView: View {
     var currentBeat: Double = 0
     var isPlaying: Bool = false
     var onBeatDragged: ((Double) -> Void)? = nil
+    /// 和音レイアウト（音符ごとの横ずらし量）。currentBeat に依存しないため、
+    /// 呼び出し側（PracticeView）で一度だけ計算して渡す。nil の場合はこの場で計算する（プレビュー用）。
+    var chordInfos: [UUID: ChordInfo]? = nil
 
     @State private var dragStartBeat: Double? = nil
 
     private let lineSpacing: CGFloat = 12
     private let beatWidth: CGFloat = 34
-    private let noteWidth: CGFloat = 13
+    private static let noteWidth: CGFloat = 13
+    private var noteWidth: CGFloat { Self.noteWidth }
     private let noteHeight: CGFloat = 10
     private let stemLength: CGFloat = 30
     private let clefAreaWidth: CGFloat = 56
@@ -44,12 +48,13 @@ struct StaffNotationView: View {
     /// 同じ拍・同じ手の音符を「和音」としてグループ化し、各音符の
     /// コード内音符数とx軸オフセットを返す。
     /// 隣接音（ダイアトニック段差 ≤1）は左右交互に配置して重なりを解消する。
-    private var chordInfos: [UUID: ChordInfo] {
+    /// 表示位置（currentBeat）とは無関係に確定するので、毎フレーム再計算せず一度だけ計算する。
+    static func computeChordInfos(for notes: [PlayedNote]) -> [UUID: ChordInfo] {
         struct Key: Hashable { let beat: Double; let hand: Hand }
         var result: [UUID: ChordInfo] = [:]
         let adjacentOffset: CGFloat = noteWidth + 2
 
-        let grouped = Dictionary(grouping: arrangement.notes) {
+        let grouped = Dictionary(grouping: notes) {
             Key(beat: $0.startBeat, hand: $0.hand)
         }
         for (_, chord) in grouped {
@@ -74,7 +79,7 @@ struct StaffNotationView: View {
         GeometryReader { geo in
             let notesAreaWidth = max(geo.size.width - clefAreaWidth, 100)
             let centerX = notesAreaWidth / 2
-            let infos = chordInfos
+            let infos = chordInfos ?? Self.computeChordInfos(for: arrangement.notes)
 
             HStack(spacing: 0) {
                 clefs

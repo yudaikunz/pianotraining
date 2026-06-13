@@ -94,11 +94,6 @@ enum Solfege {
         [1, 3, 6, 8, 10].contains(pitchClass(pitch))
     }
 
-    /// オクターブ番号（C4 = 中央ド を基準に 4）
-    static func octave(for pitch: Int) -> Int {
-        pitch / 12 - 1
-    }
-
     /// 五線譜の段位置を計算するための「ダイアトニック段番号」（オクターブをまたいで連番）
     /// 例: C4=28, D4=29, E4=30 ... 1段=半オクターブ違うと7変わる
     static func diatonicStep(for pitch: Int) -> Int {

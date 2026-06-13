@@ -64,6 +64,7 @@ struct SettingsView: View {
                             .tag(speed)
                     }
                 }
+                .pickerStyle(.navigationLink)
             } header: {
                 Text("表示と再生")
             } footer: {
