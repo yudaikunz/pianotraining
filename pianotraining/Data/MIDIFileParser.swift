@@ -28,12 +28,22 @@ struct MIDIFileParser {
     /// アプリにバンドルされたMIDIファイルを読み込んで演奏データに変換する。
     /// 複数トラックがある場合はトラックごとの平均音高から左右の手を自動判定する。
     /// 単一トラックの場合は `fallbackHand` を使う（メロディのみのファイル向け）。
+    /// 該当ファイルが存在しない場合は他の形式へのフォールバックなので無音で nil を返すが、
+    /// ファイルは存在するのに読み込み・解析に失敗した場合はログを出す（バンドル不備の早期発見用）。
     static func loadArrangement(resourceName: String, fallbackHand: Hand = .right) -> Arrangement? {
-        guard let url = Bundle.main.url(forResource: resourceName, withExtension: "mid"),
-              let data = try? Data(contentsOf: url) else {
+        guard let url = Bundle.main.url(forResource: resourceName, withExtension: "mid") else {
             return nil
         }
-        return try? parse(data: data, fallbackHand: fallbackHand)
+        guard let data = try? Data(contentsOf: url) else {
+            print("MIDI読み込み失敗: \(resourceName) のファイルを読み込めませんでした")
+            return nil
+        }
+        do {
+            return try parse(data: data, fallbackHand: fallbackHand)
+        } catch {
+            print("MIDI解析失敗: \(resourceName): \(error)")
+            return nil
+        }
     }
 
     static func parse(data: Data, fallbackHand: Hand = .right) throws -> Arrangement {

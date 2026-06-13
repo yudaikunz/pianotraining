@@ -13,28 +13,46 @@ struct MusicXMLParser {
 
     /// アプリにバンドルされたMusicXMLファイルを読み込んで演奏データに変換する。
     /// `.musicxml` / `.xml`（非圧縮）を優先し、無ければ `.mxl`（ZIP圧縮）を展開して読む。
+    /// 該当ファイルが存在しない場合は他の形式へのフォールバックなので無音で nil を返すが、
+    /// ファイルは存在するのに読み込み・解析に失敗した場合はログを出す（バンドル不備の早期発見用）。
     static func loadArrangement(resourceName: String) -> Arrangement? {
         if let url = Bundle.main.url(forResource: resourceName, withExtension: "musicxml")
-            ?? Bundle.main.url(forResource: resourceName, withExtension: "xml"),
-           let data = try? Data(contentsOf: url) {
-            return parse(data: data)
+            ?? Bundle.main.url(forResource: resourceName, withExtension: "xml") {
+            guard let data = try? Data(contentsOf: url) else {
+                print("MusicXML読み込み失敗: \(resourceName) のファイルを読み込めませんでした")
+                return nil
+            }
+            return parse(data: data, source: resourceName)
         }
-        if let url = Bundle.main.url(forResource: resourceName, withExtension: "mxl"),
-           let zipped = try? Data(contentsOf: url),
-           let data = MXLArchive.extractScoreXML(from: zipped) {
-            return parse(data: data)
+        if let url = Bundle.main.url(forResource: resourceName, withExtension: "mxl") {
+            guard let zipped = try? Data(contentsOf: url) else {
+                print("MXL読み込み失敗: \(resourceName) のファイルを読み込めませんでした")
+                return nil
+            }
+            guard let data = MXLArchive.extractScoreXML(from: zipped) else {
+                print("MXL展開失敗: \(resourceName) から楽譜XMLを取り出せませんでした")
+                return nil
+            }
+            return parse(data: data, source: resourceName)
         }
         return nil
     }
 
-    static func parse(data: Data) -> Arrangement? {
+    static func parse(data: Data, source: String = "MusicXML") -> Arrangement? {
         let parser = XMLParser(data: data)
         let delegate = MusicXMLParserDelegate()
         parser.delegate = delegate
-        guard parser.parse() else { return nil }
+        guard parser.parse() else {
+            let detail = parser.parserError?.localizedDescription ?? "不明なエラー"
+            print("MusicXML解析失敗 (\(source)): \(detail)（\(parser.lineNumber)行目）")
+            return nil
+        }
 
         let notes = delegate.notes.sorted { $0.startBeat < $1.startBeat }
-        guard !notes.isEmpty else { return nil }
+        guard !notes.isEmpty else {
+            print("MusicXML解析警告 (\(source)): 音符データが見つかりませんでした")
+            return nil
+        }
         return Arrangement(notes: notes, bpm: delegate.bpm, beatsPerMeasure: delegate.beatsPerMeasure)
     }
 }
