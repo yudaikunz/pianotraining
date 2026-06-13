@@ -19,6 +19,9 @@ struct PracticeView: View {
     /// 設定画面で選んだ再生スピード（テンポ倍率）。全曲共通で適用される
     @AppStorage(AppSettings.playbackSpeedKey) private var playbackSpeed = 1.0
 
+    /// iPad（横幅に余裕がある画面）かどうか。楽譜・鍵盤を拡大表示するために使う
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     private let soundEngine = PianoSoundEngine()
 
     init(song: Song, difficulty: Difficulty) {
@@ -69,6 +72,12 @@ struct PracticeView: View {
         }
     }
 
+    /// iPadなど横幅に余裕がある画面（horizontalSizeClass == .regular）では、
+    /// 楽譜・落下ノーツ・鍵盤をまとめて拡大し、広い画面を活かす
+    private var staffScale: CGFloat {
+        horizontalSizeClass == .regular ? 1.25 : 1.0
+    }
+
     var body: some View {
         GeometryReader { geo in
             // 画面の向き（横長かどうか）に応じて、各パーツの高さ配分を変える。
@@ -89,9 +98,10 @@ struct PracticeView: View {
                             guard !isPlaying else { return }
                             currentBeat = beat
                         },
-                        chordInfos: chordInfos
+                        chordInfos: chordInfos,
+                        scale: staffScale
                     )
-                    .frame(height: isLandscape ? 208 : 264)
+                    .frame(height: (isLandscape ? 208 : 264) * staffScale)
                     .padding(.horizontal)
 
                     practiceArea(keyboardWidth: keyboardWidth, isLandscape: isLandscape)
@@ -211,12 +221,12 @@ struct PracticeView: View {
             lowestPitch: range.lowestPitch,
             octaveCount: range.octaveCount,
             width: keyboardWidth,
-            keyboardHeight: isLandscape ? 104 : 128
+            keyboardHeight: (isLandscape ? 104 : 128) * staffScale
         )
 
         return VStack(spacing: 6) {
             FallingNotesView(arrangement: arrangement, currentBeat: currentBeat, layout: layout)
-                .frame(width: keyboardWidth, height: isLandscape ? 120 : 168)
+                .frame(width: keyboardWidth, height: (isLandscape ? 120 : 168) * staffScale)
             PianoKeyboardView(layout: layout, highlightedKeys: highlightedKeys)
         }
         .frame(width: keyboardWidth)

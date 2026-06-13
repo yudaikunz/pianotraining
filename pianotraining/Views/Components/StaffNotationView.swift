@@ -16,16 +16,21 @@ struct StaffNotationView: View {
     /// 和音レイアウト（音符ごとの横ずらし量）。currentBeat に依存しないため、
     /// 呼び出し側（PracticeView）で一度だけ計算して渡す。nil の場合はこの場で計算する（プレビュー用）。
     var chordInfos: [UUID: ChordInfo]? = nil
+    /// iPadなど横幅に余裕がある画面で楽譜全体を拡大表示するための倍率。
+    /// 寸法・フォントサイズすべてに一律で適用するので、レイアウトの比率は変わらない。
+    var scale: CGFloat = 1.0
 
     @State private var dragStartBeat: Double? = nil
 
-    private let lineSpacing: CGFloat = 12
-    private let beatWidth: CGFloat = 34
+    private var lineSpacing: CGFloat { 12 * scale }
+    private var beatWidth: CGFloat { 34 * scale }
+    /// ChordInfo の xOffset は currentBeat に依存せず一度だけ計算されるため、
+    /// scale を含まない基準値を使う（描画時に `xOffset * scale` として適用する）。
     private static let noteWidth: CGFloat = 13
-    private var noteWidth: CGFloat { Self.noteWidth }
-    private let noteHeight: CGFloat = 10
-    private let stemLength: CGFloat = 30
-    private let clefAreaWidth: CGFloat = 56
+    private var noteWidth: CGFloat { Self.noteWidth * scale }
+    private var noteHeight: CGFloat { 10 * scale }
+    private var stemLength: CGFloat { 30 * scale }
+    private var clefAreaWidth: CGFloat { 56 * scale }
 
     private let trebleBottomPitch = 64
     private let bassBottomPitch = 43
@@ -33,11 +38,11 @@ struct StaffNotationView: View {
 
     // 高音側の音符・臨時記号・ラベルが上端で見切れないよう、上に余白を多めに確保する
     // （加線4本分＝G6・A6あたりまでをカバーする）
-    private var trebleTopY: CGFloat { 56 }
+    private var trebleTopY: CGFloat { 56 * scale }
     private var trebleBottomY: CGFloat { trebleTopY + lineSpacing * 4 }
     private var bassTopY: CGFloat { trebleBottomY + lineSpacing * 5 }
     private var bassBottomY: CGFloat { bassTopY + lineSpacing * 4 }
-    private var contentHeight: CGFloat { bassBottomY + 30 }
+    private var contentHeight: CGFloat { bassBottomY + 30 * scale }
 
     private var activeNoteIDs: Set<UUID> {
         Set(arrangement.notes
@@ -98,7 +103,7 @@ struct StaffNotationView: View {
                         let info = infos[note.id] ?? ChordInfo(size: 1, xOffset: 0)
                         noteView(
                             for: note,
-                            x: baseX + info.xOffset,
+                            x: baseX + info.xOffset * scale,
                             isActive: activeNoteIDs.contains(note.id),
                             chordSize: info.size
                         )
@@ -129,7 +134,7 @@ struct StaffNotationView: View {
     private func playheadCursor(at x: CGFloat) -> some View {
         Rectangle()
             .fill(Color.orange.opacity(0.55))
-            .frame(width: 2, height: bassBottomY - trebleTopY + 8)
+            .frame(width: 2 * scale, height: bassBottomY - trebleTopY + 8 * scale)
             .position(x: x, y: (trebleTopY + bassBottomY) / 2)
     }
 
@@ -151,7 +156,7 @@ struct StaffNotationView: View {
                 .font(.system(size: fontSize))
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 9, weight: .semibold))
+                .font(.system(size: 9 * scale, weight: .semibold))
                 .foregroundStyle(color.opacity(0.75))
         }
     }
@@ -211,14 +216,14 @@ struct StaffNotationView: View {
             if isActive {
                 Circle()
                     .fill(Color.orange.opacity(0.18))
-                    .frame(width: 22, height: 22)
+                    .frame(width: 22 * scale, height: 22 * scale)
                     .position(x: x, y: y)
             }
 
             ForEach(ledgerLineYs(for: note.pitch), id: \.self) { ledgerY in
                 Rectangle()
                     .fill(Color(.systemGray3))
-                    .frame(width: noteWidth + 8, height: 1)
+                    .frame(width: noteWidth + 8 * scale, height: 1)
                     .position(x: x, y: ledgerY)
             }
 
@@ -232,14 +237,14 @@ struct StaffNotationView: View {
 
             if Solfege.isSharp(note.pitch) {
                 Text("♯")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12 * scale, weight: .bold))
                     .foregroundStyle(color)
-                    .position(x: x - (noteWidth / 2 + 10), y: y)
+                    .position(x: x - (noteWidth / 2 + 10 * scale), y: y)
             }
 
             if showLabel {
                 Text(Solfege.baseName(for: note.pitch))
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.system(size: 10 * scale, weight: .bold))
                     .foregroundStyle(color)
                     .position(x: x, y: y + lineSpacing * 1.9)
             }
@@ -250,12 +255,12 @@ struct StaffNotationView: View {
         let bottomPitch = note.pitch >= 60 ? trebleBottomPitch : bassBottomPitch
         let relativeStep = Solfege.diatonicStep(for: note.pitch) - Solfege.diatonicStep(for: bottomPitch)
         let pointsUp = relativeStep < middleLineStep
-        let stemX = x + (pointsUp ? (noteWidth / 2 - 1) : -(noteWidth / 2 - 1))
+        let stemX = x + (pointsUp ? (noteWidth / 2 - scale) : -(noteWidth / 2 - scale))
         let centerY = pointsUp ? y - stemLength / 2 : y + stemLength / 2
 
         return Rectangle()
             .fill(color)
-            .frame(width: 1.3, height: stemLength)
+            .frame(width: 1.3 * scale, height: stemLength)
             .position(x: stemX, y: centerY)
     }
 
