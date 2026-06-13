@@ -22,7 +22,7 @@ struct PracticeView: View {
     /// iPad（横幅に余裕がある画面）かどうか。楽譜・鍵盤を拡大表示するために使う
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-    private let soundEngine = PianoSoundEngine()
+    @StateObject private var soundEngine = PianoSoundEngine()
 
     init(song: Song, difficulty: Difficulty) {
         self.song = song
@@ -89,6 +89,10 @@ struct PracticeView: View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: isLandscape ? 10 : 12) {
                     header
+
+                    if let message = soundEngine.diagnosticMessage {
+                        diagnosticBanner(message: message)
+                    }
 
                     StaffNotationView(
                         arrangement: arrangement,
@@ -193,6 +197,22 @@ struct PracticeView: View {
         }
     }
 
+    /// 音源の準備に失敗した際に表示する診断バナー。
+    /// 実機をXcodeに接続しなくても、画面上から失敗原因を確認できるようにするための一時的な表示。
+    private func diagnosticBanner(message: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+            Text("音が鳴らない場合の診断情報:\n\(message)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+        .padding(.horizontal)
+    }
+
     private var handLegend: some View {
         HStack(spacing: 20) {
             legendItem(color: Hand.right.color, label: "右手（ト音記号）")
@@ -264,6 +284,9 @@ struct PracticeView: View {
 
                 Button {
                     if currentBeat >= arrangement.totalBeats { currentBeat = 0 }
+                    if !isPlaying {
+                        soundEngine.prepareForPlayback()
+                    }
                     isPlaying.toggle()
                 } label: {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")

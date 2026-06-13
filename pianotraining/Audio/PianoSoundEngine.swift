@@ -1,8 +1,9 @@
 import AVFoundation
+import Combine
 
 /// `AVAudioUnitSampler` にiOS内蔵のサウンドバンク（SoundFont/DLS）からピアノ音色を読み込み、
 /// MIDIノート番号を渡すだけで発音・消音できるようにするシンプルな再生エンジン。
-final class PianoSoundEngine {
+final class PianoSoundEngine: ObservableObject {
     private let engine = AVAudioEngine()
     private let sampler = AVAudioUnitSampler()
     /// 音源の読み込みとエンジン起動まで完了し、発音できる状態か
@@ -12,6 +13,10 @@ final class PianoSoundEngine {
     private var graphConfigured = false
     /// 現在発音中のMIDIノート。一括停止で実際に鳴っている音だけを止めるために保持する。
     private var soundingNotes: Set<UInt8> = []
+
+    /// オーディオセッションの設定・音源の読み込みに失敗した内容（画面表示用の診断情報）。
+    /// 準備に成功すると nil に戻る。
+    @Published private(set) var diagnosticMessage: String?
 
     deinit {
         teardown()
@@ -27,6 +32,12 @@ final class PianoSoundEngine {
         } catch {
             print("オーディオセッションの解放に失敗しました: \(error)")
         }
+    }
+
+    /// 再生開始時に呼び出し、音源読み込みの失敗があれば `diagnosticMessage` に即座に反映する
+    /// （実機で無音になる原因をXcode接続なしで画面上から確認できるようにするため）。
+    func prepareForPlayback() {
+        setupIfNeeded()
     }
 
     /// オーディオセッションの有効化と音源の読み込みは、実際に最初の音を鳴らす直前まで遅らせる。
@@ -62,7 +73,9 @@ final class PianoSoundEngine {
             try session.setCategory(.playback, mode: .default)
             try session.setActive(true)
         } catch {
-            print("オーディオセッションの設定に失敗しました: \(error)")
+            let message = "オーディオセッションの設定に失敗しました: \(error)"
+            print(message)
+            diagnosticMessage = message
         }
     }
 
@@ -74,8 +87,11 @@ final class PianoSoundEngine {
             try sampler.loadSoundBankInstrument(at: bankURL, program: 0, bankMSB: 0x79, bankLSB: 0x00)
             try engine.start()
             isReady = true
+            diagnosticMessage = nil
         } catch {
-            print("ピアノ音源の読み込みに失敗しました: \(error)")
+            let message = "ピアノ音源の読み込みに失敗しました: \(error)"
+            print(message)
+            diagnosticMessage = message
         }
     }
 
