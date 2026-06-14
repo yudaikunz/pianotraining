@@ -133,7 +133,8 @@ struct PracticeView: View {
             // 他アプリの音楽が中断・音量低下されたままにならないようにする
             soundEngine.teardown()
         }
-        .task(id: isPlaying) {
+        // playbackSpeedもidに含め、再生中にスピードを変更したらその場でテンポを切り替える
+        .task(id: "\(isPlaying)|\(playbackSpeed)") {
             guard isPlaying else {
                 stopAllSound()
                 return
@@ -268,21 +269,13 @@ struct PracticeView: View {
                 .tint(difficultyColor)
                 .padding(.horizontal, 32)
 
-            // 標準以外のスピードで再生中であることが分かるよう表示する（設定画面で変更可能）
-            if playbackSpeed != 1.0 {
-                Text("再生スピード \(AppSettings.speedText(playbackSpeed))")
-                    .font(.caption2)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-            }
-
             HStack(spacing: 24) {
                 Button {
                     currentBeat = 0
                     isPlaying = false
                     stopAllSound()
                 } label: {
-                    Image(systemName: "arrow.counterclockwise")
+                    Image(systemName: "backward.end.fill")
                         .font(.title3.weight(.semibold))
                         .foregroundStyle(.primary)
                         .frame(width: 52, height: 52)
@@ -308,7 +301,38 @@ struct PracticeView: View {
                                 .shadow(color: difficultyColor.opacity(0.35), radius: 10, x: 0, y: 4)
                         )
                 }
+
+                speedMenu
             }
+        }
+    }
+
+    /// この画面内で再生スピードを切り替えるためのメニュー（変更内容は設定画面とも共有される）
+    private var speedMenu: some View {
+        Menu {
+            ForEach(AppSettings.playbackSpeedOptions, id: \.self) { speed in
+                Button {
+                    playbackSpeed = speed
+                } label: {
+                    let label = speed == 1.0 ? "標準 ×1" : AppSettings.speedText(speed)
+                    if speed == playbackSpeed {
+                        Label(label, systemImage: "checkmark")
+                    } else {
+                        Text(label)
+                    }
+                }
+            }
+        } label: {
+            VStack(spacing: 2) {
+                Image(systemName: "speedometer")
+                    .font(.title3.weight(.semibold))
+                Text(AppSettings.speedText(playbackSpeed))
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+            }
+            .foregroundStyle(.primary)
+            .frame(width: 52, height: 52)
+            .background(Circle().fill(Color(.secondarySystemBackground)))
         }
     }
 }
