@@ -8,10 +8,16 @@ struct SongRowView: View {
             songIcon
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(song.title)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .multilineTextAlignment(.leading)
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(song.title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
 
                 Text(song.composer)
                     .font(.subheadline)

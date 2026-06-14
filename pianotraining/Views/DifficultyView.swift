@@ -3,27 +3,16 @@ import SwiftUI
 struct DifficultyView: View {
     let song: Song
 
-    /// くるくる回すホイールピッカーで選んでいる難易度
-    @State private var selectedDifficulty: Difficulty
-
-    init(song: Song) {
-        self.song = song
-        _selectedDifficulty = State(initialValue: song.availableDifficulties.first ?? .superBeginner)
-    }
-
-    private var selectedColor: Color {
-        switch selectedDifficulty {
-        case .superBeginner: return .green
-        case .beginner:      return .blue
-        case .intermediate:  return .orange
-        }
-    }
-
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(spacing: 20) {
-                    songInfoCard
+        ScrollView {
+            VStack(spacing: 24) {
+                songInfoCard
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("難易度を選ぶ")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding(.horizontal)
 
                     if song.availableDifficulties.isEmpty {
                         Text("この曲は現在準備中です")
@@ -32,60 +21,24 @@ struct DifficultyView: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.vertical, 32)
                     } else {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("難易度を選ぶ")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .padding(.horizontal)
-
-                            difficultyPicker
-
-                            DifficultyCard(
-                                difficulty: selectedDifficulty,
-                                durationSeconds: SongDurations.seconds(songID: song.id, difficulty: selectedDifficulty)
-                            )
+                        ForEach(song.availableDifficulties) { difficulty in
+                            NavigationLink(destination: PracticeView(song: song, difficulty: difficulty)) {
+                                DifficultyCard(
+                                    difficulty: difficulty,
+                                    durationSeconds: SongDurations.seconds(songID: song.id, difficulty: difficulty)
+                                )
+                            }
+                            .buttonStyle(.plain)
                             .padding(.horizontal)
+                            .carouselTiltEffect()
                         }
                     }
                 }
-                .padding(.vertical)
             }
-
-            if !song.availableDifficulties.isEmpty {
-                Divider()
-                startButton
-                    .padding()
-                    .background(Color(.systemBackground))
-            }
+            .padding(.vertical)
         }
         .navigationTitle(song.title)
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    /// 難易度をくるくる回して選ぶホイールピッカー
-    private var difficultyPicker: some View {
-        Picker("難易度", selection: $selectedDifficulty) {
-            ForEach(song.availableDifficulties) { difficulty in
-                Text(difficulty.rawValue).tag(difficulty)
-            }
-        }
-        .pickerStyle(.wheel)
-        .frame(height: 110)
-        .padding(.horizontal)
-    }
-
-    private var startButton: some View {
-        NavigationLink(destination: PracticeView(song: song, difficulty: selectedDifficulty)) {
-            HStack {
-                Text("「\(selectedDifficulty.rawValue)」で練習を始める")
-                Image(systemName: "chevron.right")
-            }
-            .font(.headline)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(selectedColor.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .foregroundStyle(.white)
-        }
     }
 
     private var songInfoCard: some View {
@@ -142,7 +95,6 @@ struct DifficultyView: View {
     }
 }
 
-/// 選択中の難易度の詳細（操作感・難易度プロファイル・演奏時間）を表示するカード
 struct DifficultyCard: View {
     let difficulty: Difficulty
     let durationSeconds: Double
@@ -206,6 +158,10 @@ struct DifficultyCard: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(Color(.systemGray3))
             }
 
             profileBadges
@@ -224,7 +180,6 @@ struct DifficultyCard: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .strokeBorder(color.opacity(0.25), lineWidth: 1)
         )
-        .animation(.easeInOut(duration: 0.15), value: difficulty)
     }
 
     /// アレンジの特徴を一目で比較できるよう、固定プロファイルの要点をバッジで並べる

@@ -3,8 +3,6 @@ import SwiftUI
 struct SongListView: View {
     @State private var selectedPeriod: MusicPeriod? = nil
     @State private var searchText = ""
-    /// くるくる回すホイールピッカーで選んでいる曲
-    @State private var selectedSongID: String = SongLibrary.songs[0].id
 
     var filteredSongs: [Song] {
         var result = SongLibrary.songs
@@ -20,10 +18,6 @@ struct SongListView: View {
         return result
     }
 
-    private var selectedSong: Song? {
-        filteredSongs.first { $0.id == selectedSongID } ?? filteredSongs.first
-    }
-
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -32,29 +26,20 @@ struct SongListView: View {
                 if filteredSongs.isEmpty {
                     emptyState
                 } else {
-                    songPicker
-
-                    if let song = selectedSong {
-                        ScrollView {
-                            VStack(spacing: 16) {
-                                SongRowView(song: song)
-
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredSongs) { song in
                                 NavigationLink(destination: DifficultyView(song: song)) {
-                                    HStack {
-                                        Text("難易度を選んで練習を始める")
-                                        Image(systemName: "chevron.right")
-                                    }
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 14)
-                                    .background(Color.accentColor.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                                    .foregroundStyle(.white)
+                                    SongRowView(song: song)
                                 }
+                                .buttonStyle(.plain)
+                                .carouselTiltEffect()
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
                         }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                     }
+                    .animation(.default, value: filteredSongs.map { $0.id })
                 }
             }
             .background(Color(.systemGroupedBackground))
@@ -68,25 +53,7 @@ struct SongListView: View {
                     }
                 }
             }
-            .onChange(of: filteredSongs.map(\.id)) { _, ids in
-                if !ids.contains(selectedSongID), let firstID = ids.first {
-                    selectedSongID = firstID
-                }
-            }
         }
-    }
-
-    /// 曲をくるくる回して選ぶホイールピッカー
-    private var songPicker: some View {
-        Picker("曲を選択", selection: $selectedSongID) {
-            ForEach(filteredSongs) { song in
-                Text(song.title)
-                    .lineLimit(1)
-                    .tag(song.id)
-            }
-        }
-        .pickerStyle(.wheel)
-        .frame(height: 140)
     }
 
     private var periodFilterBar: some View {
