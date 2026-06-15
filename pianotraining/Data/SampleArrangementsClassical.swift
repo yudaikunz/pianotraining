@@ -7,46 +7,50 @@ extension SampleArrangements {
 
     // MARK: - パッヘルベルのカノン（パッヘルベル）ハ長調・8小節
 
-    /// 超初心者：右手メロディのみ（有名な和音進行に沿ったアルペジオ）
+    /// 超初心者：右手メロディのみ
+    /// パッヘルベルのカノンの本質である「コード進行に沿って一段ずつ下行するシーケンス（模倣の旋律線）」を再現。
+    /// 各小節は4音ずつ下行し、小節の最後の音が次の小節の和音を予告するように作られている。
     static let pachelbelCanon = Arrangement(
         notes: [
-            // 1小節目: ド ミ ソ ド
-            PlayedNote(pitch: 60, startBeat: 0.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 1.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 2.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 72, startBeat: 3.0,  duration: 1.0, hand: .right),
-            // 2小節目: ソ シ レ ソ
-            PlayedNote(pitch: 67, startBeat: 4.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 71, startBeat: 5.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 74, startBeat: 6.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 7.0,  duration: 1.0, hand: .right),
-            // 3小節目: ラ ド ミ ラ
-            PlayedNote(pitch: 69, startBeat: 8.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 72, startBeat: 9.0,  duration: 1.0, hand: .right),
-            PlayedNote(pitch: 76, startBeat: 10.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 69, startBeat: 11.0, duration: 1.0, hand: .right),
-            // 4小節目: ミ ソ シ ミ
-            PlayedNote(pitch: 64, startBeat: 12.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 13.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 71, startBeat: 14.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 76, startBeat: 15.0, duration: 1.0, hand: .right),
-            // 5小節目: ファ ラ ド ファ
-            PlayedNote(pitch: 65, startBeat: 16.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 69, startBeat: 17.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 72, startBeat: 18.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 65, startBeat: 19.0, duration: 1.0, hand: .right),
-            // 6小節目: ド ミ ソ ド
-            PlayedNote(pitch: 60, startBeat: 20.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 21.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 22.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 72, startBeat: 23.0, duration: 1.0, hand: .right),
-            // 7小節目: ファ ラ ド ファ
+            // 1小節目（C）: ミ レ ド シ
+            PlayedNote(pitch: 76, startBeat: 0.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 74, startBeat: 1.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 72, startBeat: 2.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 71, startBeat: 3.0,  duration: 1.0, hand: .right),
+            // 2小節目（G）: レ ド シ ラ
+            PlayedNote(pitch: 74, startBeat: 4.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 72, startBeat: 5.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 71, startBeat: 6.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 69, startBeat: 7.0,  duration: 1.0, hand: .right),
+            // 3小節目（Am）: ド シ ラ ソ
+            PlayedNote(pitch: 72, startBeat: 8.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 71, startBeat: 9.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 69, startBeat: 10.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 11.0, duration: 1.0, hand: .right),
+            // 4小節目（Em）: シ ラ ソ ファ
+            PlayedNote(pitch: 71, startBeat: 12.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 69, startBeat: 13.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 14.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 65, startBeat: 15.0, duration: 1.0, hand: .right),
+            // 5小節目（F）: ラ ソ ファ ミ
+            PlayedNote(pitch: 69, startBeat: 16.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 17.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 65, startBeat: 18.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 19.0, duration: 1.0, hand: .right),
+            // 6小節目（C）: ソ ファ ミ レ
+            PlayedNote(pitch: 67, startBeat: 20.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 65, startBeat: 21.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 22.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 62, startBeat: 23.0, duration: 1.0, hand: .right),
+            // 7小節目（F）: ファ ミ レ ド
             PlayedNote(pitch: 65, startBeat: 24.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 69, startBeat: 25.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 72, startBeat: 26.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 65, startBeat: 27.0, duration: 1.0, hand: .right),
-            // 8小節目: ド（4拍）
-            PlayedNote(pitch: 72, startBeat: 28.0, duration: 4.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 25.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 62, startBeat: 26.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 60, startBeat: 27.0, duration: 1.0, hand: .right),
+            // 8小節目（G）: レ ド シ（2拍、落ち着いて締める）
+            PlayedNote(pitch: 62, startBeat: 28.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 60, startBeat: 29.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 59, startBeat: 30.0, duration: 2.0, hand: .right),
         ],
         bpm: 72
     )
