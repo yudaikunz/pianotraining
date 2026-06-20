@@ -117,21 +117,21 @@ extension SampleArrangements {
         bpm: 88
     )
 
-    // MARK: - 大きな古時計 ハ長調・4/4拍子・8小節
+    // MARK: - 大きな古時計 ハ長調・4/4拍子・10小節
 
     /// 超初心者：右手メロディのみ（「大きなのっぽの古時計」の冒頭フレーズ）
     static let grandfathersClock = Arrangement(
         notes: [
             // 1小節目: ソ ソ ラ ソ（大きなのっ）
-            PlayedNote(pitch: 67, startBeat: 0.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 1.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 69, startBeat: 2.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 3.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 0.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 1.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 69, startBeat: 2.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 3.0,  duration: 1.0, hand: .right),
             // 2小節目: ミ ソ ミ レ（ぽの古時）
-            PlayedNote(pitch: 64, startBeat: 4.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 5.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 6.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 62, startBeat: 7.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 4.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 5.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 6.0,  duration: 1.0, hand: .right),
+            PlayedNote(pitch: 62, startBeat: 7.0,  duration: 1.0, hand: .right),
             // 3小節目: ド レ ミ ソ（計おじい）
             PlayedNote(pitch: 60, startBeat: 8.0,  duration: 1.0, hand: .right),
             PlayedNote(pitch: 62, startBeat: 9.0,  duration: 1.0, hand: .right),
@@ -140,23 +140,31 @@ extension SampleArrangements {
             // 4小節目: ラ（2拍）ソ（2拍）（さんの時計）
             PlayedNote(pitch: 69, startBeat: 12.0, duration: 2.0, hand: .right),
             PlayedNote(pitch: 67, startBeat: 14.0, duration: 2.0, hand: .right),
-            // 5小節目: 1小節目の繰り返し
+            // 5小節目: 1小節目の繰り返し（百年いつも）
             PlayedNote(pitch: 67, startBeat: 16.0, duration: 1.0, hand: .right),
             PlayedNote(pitch: 67, startBeat: 17.0, duration: 1.0, hand: .right),
             PlayedNote(pitch: 69, startBeat: 18.0, duration: 1.0, hand: .right),
             PlayedNote(pitch: 67, startBeat: 19.0, duration: 1.0, hand: .right),
-            // 6小節目: 2小節目の繰り返し
+            // 6小節目: 2小節目の繰り返し（動いてた）
             PlayedNote(pitch: 64, startBeat: 20.0, duration: 1.0, hand: .right),
             PlayedNote(pitch: 67, startBeat: 21.0, duration: 1.0, hand: .right),
             PlayedNote(pitch: 64, startBeat: 22.0, duration: 1.0, hand: .right),
             PlayedNote(pitch: 62, startBeat: 23.0, duration: 1.0, hand: .right),
-            // 7小節目: ド ミ ソ ミ
+            // 7小節目: 3小節目の繰り返し（ご自慢の）
             PlayedNote(pitch: 60, startBeat: 24.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 25.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 67, startBeat: 26.0, duration: 1.0, hand: .right),
-            PlayedNote(pitch: 64, startBeat: 27.0, duration: 1.0, hand: .right),
-            // 8小節目: ド（全音符）
-            PlayedNote(pitch: 60, startBeat: 28.0, duration: 4.0, hand: .right),
+            PlayedNote(pitch: 62, startBeat: 25.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 26.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 27.0, duration: 1.0, hand: .right),
+            // 8小節目: 4小節目の繰り返し（時計さ）
+            PlayedNote(pitch: 69, startBeat: 28.0, duration: 2.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 30.0, duration: 2.0, hand: .right),
+            // 9小節目: ド ミ ソ ミ（締めくくり）
+            PlayedNote(pitch: 60, startBeat: 32.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 33.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 67, startBeat: 34.0, duration: 1.0, hand: .right),
+            PlayedNote(pitch: 64, startBeat: 35.0, duration: 1.0, hand: .right),
+            // 10小節目: ド（全音符）
+            PlayedNote(pitch: 60, startBeat: 36.0, duration: 4.0, hand: .right),
         ],
         bpm: 72,
         beatsPerMeasure: 4
@@ -172,7 +180,9 @@ extension SampleArrangements {
             PlayedNote(pitch: 48, startBeat: 16.0, duration: 4.0, hand: .left), // ド (C3) = I
             PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2) = V
             PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3) = I
-            PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3) = I
+            PlayedNote(pitch: 43, startBeat: 28.0, duration: 4.0, hand: .left), // ソ (G2) = V（終止形）
+            PlayedNote(pitch: 48, startBeat: 32.0, duration: 4.0, hand: .left), // ド (C3) = I
+            PlayedNote(pitch: 48, startBeat: 36.0, duration: 4.0, hand: .left), // ド (C3) = I
         ],
         bpm: 72,
         beatsPerMeasure: 4
