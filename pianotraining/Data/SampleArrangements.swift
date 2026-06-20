@@ -420,14 +420,14 @@ struct SampleArrangements {
     static let butterflyTwoHands = Arrangement(
         notes: butterfly.notes + [
             // セクションA（0-31）
-            PlayedNote(pitch: 55, startBeat: 0.0,  duration: 4.0, hand: .left), // ソ (G3)
-            PlayedNote(pitch: 53, startBeat: 4.0,  duration: 4.0, hand: .left), // ファ (F3)
-            PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 55, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G3)
-            PlayedNote(pitch: 55, startBeat: 16.0, duration: 4.0, hand: .left), // ソ (G3)
-            PlayedNote(pitch: 53, startBeat: 20.0, duration: 4.0, hand: .left), // ファ (F3)
-            PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3)
+            PlayedNote(pitch: 55, startBeat: 0.0,  duration: 4.0, hand: .left), // ソ (G3) = V
+            PlayedNote(pitch: 55, startBeat: 4.0,  duration: 4.0, hand: .left), // ソ (G3) = V（右手Fの下はG7が正しい）
+            PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3) = I
+            PlayedNote(pitch: 55, startBeat: 12.0, duration: 4.0, hand: .left), // ソ (G3) = V
+            PlayedNote(pitch: 55, startBeat: 16.0, duration: 4.0, hand: .left), // ソ (G3) = V
+            PlayedNote(pitch: 55, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G3) = V（同上）
+            PlayedNote(pitch: 48, startBeat: 24.0, duration: 4.0, hand: .left), // ド (C3) = I
+            PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3) = I
             // セクションB（32-63）
             PlayedNote(pitch: 55, startBeat: 32.0, duration: 4.0, hand: .left), // ソ (G3)
             PlayedNote(pitch: 55, startBeat: 36.0, duration: 4.0, hand: .left),
@@ -438,8 +438,8 @@ struct SampleArrangements {
             PlayedNote(pitch: 55, startBeat: 56.0, duration: 4.0, hand: .left),
             PlayedNote(pitch: 55, startBeat: 60.0, duration: 4.0, hand: .left),
             // セクションA'（64-79）
-            PlayedNote(pitch: 55, startBeat: 64.0, duration: 4.0, hand: .left),
-            PlayedNote(pitch: 53, startBeat: 68.0, duration: 4.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 55, startBeat: 64.0, duration: 4.0, hand: .left), // ソ (G3) = V
+            PlayedNote(pitch: 55, startBeat: 68.0, duration: 4.0, hand: .left), // ソ (G3) = V（同上）
             PlayedNote(pitch: 48, startBeat: 72.0, duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 76.0, duration: 4.0, hand: .left),
         ],
