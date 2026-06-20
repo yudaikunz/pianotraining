@@ -205,13 +205,58 @@ struct StaffNotationView: View {
         }
     }
 
+    // MARK: - 音符の種類判定
+
+    private enum NoteType {
+        case whole          // 全音符 (4拍)
+        case dottedHalf     // 付点二分音符 (3拍)
+        case half           // 二分音符 (2拍)
+        case dottedQuarter  // 付点四分音符 (1.5拍)
+        case quarter        // 四分音符 (1拍)
+        case eighth         // 八分音符 (0.5拍)
+        case sixteenth      // 十六分音符 (0.25拍)
+
+        var isFilled: Bool {
+            switch self {
+            case .whole, .dottedHalf, .half: return false
+            default: return true
+            }
+        }
+
+        var hasStem: Bool { self != .whole }
+
+        var isDotted: Bool {
+            self == .dottedHalf || self == .dottedQuarter
+        }
+
+        var flagCount: Int {
+            switch self {
+            case .eighth: return 1
+            case .sixteenth: return 2
+            default: return 0
+            }
+        }
+
+        init(duration: Double) {
+            switch duration {
+            case 3.5...:       self = .whole
+            case 2.5..<3.5:    self = .dottedHalf
+            case 1.75..<2.5:   self = .half
+            case 1.25..<1.75:  self = .dottedQuarter
+            case 0.75..<1.25:  self = .quarter
+            case 0.375..<0.75: self = .eighth
+            default:           self = .sixteenth
+            }
+        }
+    }
+
     @ViewBuilder
     private func noteView(for note: PlayedNote, x: CGFloat, isActive: Bool, chordSize: Int) -> some View {
         let y = yPosition(for: note.pitch)
         let baseColor = note.hand.color
         let color: Color = isActive ? .orange : baseColor
-        // 3音以上の和音で再生中はラベルを隠してノートヘッドのみ表示し視認性を確保
         let showLabel = isActive || !isPlaying || chordSize < 3
+        let type = NoteType(duration: note.duration)
 
         Group {
             if isActive {
@@ -228,13 +273,18 @@ struct StaffNotationView: View {
                     .position(x: x, y: ledgerY)
             }
 
-            stem(for: note, x: x, y: y, color: color)
+            if type.hasStem {
+                stemAndFlags(for: note, x: x, y: y, color: color, type: type)
+            }
 
-            Ellipse()
-                .fill(color)
-                .frame(width: noteWidth, height: noteHeight)
-                .rotationEffect(.degrees(-18))
-                .position(x: x, y: y)
+            noteHead(x: x, y: y, color: color, type: type)
+
+            if type.isDotted {
+                Circle()
+                    .fill(color)
+                    .frame(width: 4 * scale, height: 4 * scale)
+                    .position(x: x + noteWidth / 2 + 5 * scale, y: y - lineSpacing / 4)
+            }
 
             if Solfege.isSharp(note.pitch) {
                 Text("♯")
@@ -252,17 +302,65 @@ struct StaffNotationView: View {
         }
     }
 
-    private func stem(for note: PlayedNote, x: CGFloat, y: CGFloat, color: Color) -> some View {
+    // MARK: - 符頭
+
+    @ViewBuilder
+    private func noteHead(x: CGFloat, y: CGFloat, color: Color, type: NoteType) -> some View {
+        if type == .whole {
+            Ellipse()
+                .stroke(color, lineWidth: 1.8 * scale)
+                .frame(width: noteWidth * 1.2, height: noteHeight * 1.1)
+                .rotationEffect(.degrees(-18))
+                .position(x: x, y: y)
+        } else if !type.isFilled {
+            Ellipse()
+                .stroke(color, lineWidth: 1.8 * scale)
+                .frame(width: noteWidth, height: noteHeight)
+                .rotationEffect(.degrees(-18))
+                .position(x: x, y: y)
+        } else {
+            Ellipse()
+                .fill(color)
+                .frame(width: noteWidth, height: noteHeight)
+                .rotationEffect(.degrees(-18))
+                .position(x: x, y: y)
+        }
+    }
+
+    // MARK: - 符幹・符尾
+
+    @ViewBuilder
+    private func stemAndFlags(for note: PlayedNote, x: CGFloat, y: CGFloat, color: Color, type: NoteType) -> some View {
         let bottomPitch = note.pitch >= 60 ? trebleBottomPitch : bassBottomPitch
         let relativeStep = Solfege.diatonicStep(for: note.pitch) - Solfege.diatonicStep(for: bottomPitch)
         let pointsUp = relativeStep < middleLineStep
         let stemX = x + (pointsUp ? (noteWidth / 2 - scale) : -(noteWidth / 2 - scale))
-        let centerY = pointsUp ? y - stemLength / 2 : y + stemLength / 2
+        let stemEndY = pointsUp ? y - stemLength : y + stemLength
 
-        return Rectangle()
+        Rectangle()
             .fill(color)
             .frame(width: 1.3 * scale, height: stemLength)
-            .position(x: stemX, y: centerY)
+            .position(x: stemX, y: (y + stemEndY) / 2)
+
+        if type.flagCount > 0 {
+            ForEach(0..<type.flagCount, id: \.self) { i in
+                let flagY = stemEndY + (pointsUp ? CGFloat(i) * 6 * scale : -CGFloat(i) * 6 * scale)
+                let direction: CGFloat = pointsUp ? 1 : -1
+                flag(at: stemX, y: flagY, direction: direction, color: color)
+            }
+        }
+    }
+
+    private func flag(at x: CGFloat, y: CGFloat, direction: CGFloat, color: Color) -> some View {
+        Path { path in
+            path.move(to: CGPoint(x: x, y: y))
+            path.addCurve(
+                to: CGPoint(x: x + 8 * scale, y: y + direction * 10 * scale),
+                control1: CGPoint(x: x + 6 * scale, y: y + direction * 2 * scale),
+                control2: CGPoint(x: x + 10 * scale, y: y + direction * 6 * scale)
+            )
+        }
+        .stroke(color, lineWidth: 1.5 * scale)
     }
 
     private func ledgerLineYs(for pitch: Int) -> [CGFloat] {
