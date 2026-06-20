@@ -257,6 +257,10 @@ struct StaffNotationView: View {
         let color: Color = isActive ? .orange : baseColor
         let showLabel = isActive || !isPlaying || chordSize < 3
         let type = NoteType(duration: note.duration)
+        let stemDown = type.hasStem && stemPointsDown(for: note)
+        let labelY = stemDown
+            ? y + stemLength + 6 * scale
+            : y + lineSpacing * 1.5
 
         Group {
             if isActive {
@@ -297,9 +301,15 @@ struct StaffNotationView: View {
                 Text(Solfege.baseName(for: note.pitch))
                     .font(.system(size: 10 * scale, weight: .bold))
                     .foregroundStyle(color)
-                    .position(x: x, y: y + lineSpacing * 1.9)
+                    .position(x: x, y: labelY)
             }
         }
+    }
+
+    private func stemPointsDown(for note: PlayedNote) -> Bool {
+        let bottomPitch = note.pitch >= 60 ? trebleBottomPitch : bassBottomPitch
+        let relativeStep = Solfege.diatonicStep(for: note.pitch) - Solfege.diatonicStep(for: bottomPitch)
+        return relativeStep >= middleLineStep
     }
 
     // MARK: - 符頭
