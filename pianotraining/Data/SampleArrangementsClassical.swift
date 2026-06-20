@@ -304,8 +304,8 @@ extension SampleArrangements {
             PlayedNote(pitch: 48, startBeat: 0.0,  duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 4.0,  duration: 4.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 48, startBeat: 8.0,  duration: 4.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 48, startBeat: 12.0, duration: 4.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 53, startBeat: 16.0, duration: 4.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 53, startBeat: 12.0, duration: 4.0, hand: .left), // ファ (F3) = IV（右手ラ・ファ・ドはFコード）
+            PlayedNote(pitch: 53, startBeat: 16.0, duration: 4.0, hand: .left), // ファ (F3) = IV
             PlayedNote(pitch: 43, startBeat: 20.0, duration: 4.0, hand: .left), // ソ (G2)
             PlayedNote(pitch: 43, startBeat: 24.0, duration: 4.0, hand: .left), // ソ (G2)
             PlayedNote(pitch: 48, startBeat: 28.0, duration: 4.0, hand: .left), // ド (C3)

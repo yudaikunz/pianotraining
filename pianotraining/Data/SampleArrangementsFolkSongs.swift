@@ -227,7 +227,7 @@ extension SampleArrangements {
             PlayedNote(pitch: 48, startBeat: 3.0,  duration: 3.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 53, startBeat: 6.0,  duration: 3.0, hand: .left), // ファ (F3)
             PlayedNote(pitch: 48, startBeat: 9.0,  duration: 3.0, hand: .left), // ド (C3)
-            PlayedNote(pitch: 53, startBeat: 12.0, duration: 3.0, hand: .left), // ファ (F3)
+            PlayedNote(pitch: 43, startBeat: 12.0, duration: 3.0, hand: .left), // ソ (G2) = V（右手レ・シはGコード(ソシレ)の音）
             PlayedNote(pitch: 48, startBeat: 15.0, duration: 3.0, hand: .left), // ド (C3)
             PlayedNote(pitch: 43, startBeat: 18.0, duration: 3.0, hand: .left), // ソ (G2)
             PlayedNote(pitch: 48, startBeat: 21.0, duration: 3.0, hand: .left), // ド (C3)
