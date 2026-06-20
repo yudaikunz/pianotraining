@@ -52,20 +52,7 @@ struct SongRowView: View {
     }
 
     private var songIcon: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [song.period.color.opacity(0.25), song.period.color.opacity(0.08)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: 50, height: 50)
-            Image(systemName: song.iconName)
-                .font(.system(size: 20, weight: .medium))
-                .foregroundStyle(song.period.color.gradient)
-        }
+        TintedIconView(systemName: song.iconName, color: song.period.color)
     }
 }
 
@@ -87,23 +74,40 @@ struct PeriodBadge: View {
 struct DifficultyBadge: View {
     let difficulty: Difficulty
 
-    var color: Color {
-        switch difficulty {
-        case .superBeginner: return .green
-        case .beginner:      return .blue
-        case .intermediate:  return .orange
-        }
-    }
-
     var body: some View {
         Text(difficulty.rawValue)
             .font(.caption2)
             .fontWeight(.medium)
             .padding(.horizontal, 6)
             .padding(.vertical, 3)
-            .background(color.opacity(0.15))
-            .foregroundStyle(color)
+            .background(difficulty.color.opacity(0.15))
+            .foregroundStyle(difficulty.color)
             .clipShape(Capsule())
+    }
+}
+
+/// グラデーション背景 + SF Symbol アイコンの組み合わせ。
+/// 曲一覧、難易度選択、設定画面で共通して使うアイコンパターン。
+struct TintedIconView: View {
+    let systemName: String
+    let color: Color
+    var size: CGFloat = 50
+    var iconSize: CGFloat = 20
+    var cornerRadius: CGFloat = 16
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(LinearGradient(
+                    colors: [color.opacity(0.25), color.opacity(0.08)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ))
+                .frame(width: size, height: size)
+            Image(systemName: systemName)
+                .font(.system(size: iconSize, weight: .medium))
+                .foregroundStyle(color.gradient)
+        }
     }
 }
 

@@ -64,14 +64,6 @@ struct PracticeView: View {
         return result
     }
 
-    private var difficultyColor: Color {
-        switch difficulty {
-        case .superBeginner: return .green
-        case .beginner:      return .blue
-        case .intermediate:  return .orange
-        }
-    }
-
     /// iPadなど横幅に余裕がある画面（horizontalSizeClass == .regular）では、
     /// 楽譜・落下ノーツ・鍵盤をまとめて拡大し、広い画面を活かす
     private var staffScale: CGFloat {
@@ -93,8 +85,8 @@ struct PracticeView: View {
                     VStack(spacing: isLandscape ? 10 : 12) {
                         header
 
-                        if let message = soundEngine.diagnosticMessage {
-                            diagnosticBanner(message: message)
+                        if soundEngine.diagnosticMessage != nil {
+                            audioUnavailableBanner
                         }
 
                         StaffNotationView(
@@ -198,27 +190,21 @@ struct PracticeView: View {
                     .fontWeight(.medium)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 3)
-                    .background(difficultyColor.opacity(0.15))
-                    .foregroundStyle(difficultyColor)
+                    .background(difficulty.color.opacity(0.15))
+                    .foregroundStyle(difficulty.color)
                     .clipShape(Capsule())
             }
         }
     }
 
-    /// 音源の準備に失敗した際に表示する診断バナー。
-    /// 実機をXcodeに接続しなくても、画面上から失敗原因を確認できるようにするための一時的な表示。
-    private func diagnosticBanner(message: String) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
-            Text("音が鳴らない場合の診断情報:\n\(message)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-        .padding(.horizontal)
+    private var audioUnavailableBanner: some View {
+        Label("音の準備に失敗しました。端末のサイレントスイッチやボリュームをご確認ください。", systemImage: "speaker.slash.fill")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal)
     }
 
     private var handLegend: some View {
@@ -265,9 +251,18 @@ struct PracticeView: View {
 
     private var controls: some View {
         VStack(spacing: 14) {
-            ProgressView(value: currentBeat, total: max(arrangement.totalBeats, 0.01))
-                .tint(difficultyColor)
-                .padding(.horizontal, 32)
+            Slider(
+                value: $currentBeat,
+                in: 0...max(arrangement.totalBeats, 0.01),
+                onEditingChanged: { editing in
+                    if editing {
+                        isPlaying = false
+                        stopAllSound()
+                    }
+                }
+            )
+            .tint(difficulty.color)
+            .padding(.horizontal, 32)
 
             HStack(spacing: 24) {
                 Button {
@@ -290,15 +285,16 @@ struct PracticeView: View {
                     isPlaying.toggle()
                 } label: {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .contentTransition(.symbolEffect(.replace))
+                        .animation(.easeOut(duration: 0.15), value: isPlaying)
                         .font(.system(size: 28, weight: .bold))
                         .foregroundStyle(.white)
-                        // 再生アイコン（三角形）は光学的に左へ寄って見えるため、わずかに右へ寄せて中心を合わせる
                         .offset(x: isPlaying ? 0 : 2)
                         .frame(width: 72, height: 72)
                         .background(
                             Circle()
-                                .fill(difficultyColor.gradient)
-                                .shadow(color: difficultyColor.opacity(0.35), radius: 10, x: 0, y: 4)
+                                .fill(difficulty.color.gradient)
+                                .shadow(color: difficulty.color.opacity(0.35), radius: 10, x: 0, y: 4)
                         )
                 }
 
@@ -339,6 +335,6 @@ struct PracticeView: View {
 
 #Preview {
     NavigationStack {
-        PracticeView(song: SongLibrary.songs.first(where: { $0.id == "bach-minuet-g" })!, difficulty: .beginner)
+        PracticeView(song: SongLibrary.songs[0], difficulty: .beginner)
     }
 }

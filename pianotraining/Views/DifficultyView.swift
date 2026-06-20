@@ -53,20 +53,7 @@ struct DifficultyView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [song.period.color.opacity(0.25), song.period.color.opacity(0.08)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 52, height: 52)
-                    Image(systemName: song.iconName)
-                        .font(.system(size: 24, weight: .medium))
-                        .foregroundStyle(song.period.color.gradient)
-                }
+                TintedIconView(systemName: song.iconName, color: song.period.color, size: 52, iconSize: 24)
             }
 
             Divider()
@@ -99,14 +86,6 @@ struct DifficultyCard: View {
     let difficulty: Difficulty
     let durationSeconds: Double
 
-    var color: Color {
-        switch difficulty {
-        case .superBeginner: return .green
-        case .beginner:      return .blue
-        case .intermediate:  return .orange
-        }
-    }
-
     var iconName: String {
         switch difficulty {
         case .superBeginner: return "1.circle.fill"
@@ -122,17 +101,15 @@ struct DifficultyCard: View {
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [color.opacity(0.25), color.opacity(0.08)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .fill(LinearGradient(
+                            colors: [difficulty.color.opacity(0.25), difficulty.color.opacity(0.08)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
                         .frame(width: 52, height: 52)
                     Image(systemName: iconName)
                         .font(.system(size: 26))
-                        .foregroundStyle(color.gradient)
+                        .foregroundStyle(difficulty.color.gradient)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -151,7 +128,7 @@ struct DifficultyCard: View {
                         ForEach(0..<3) { i in
                             Image(systemName: "star.fill")
                                 .font(.caption)
-                                .foregroundStyle(i < difficulty.starCount ? color : Color(.systemGray4))
+                                .foregroundStyle(i < difficulty.starCount ? difficulty.color : Color(.systemGray4))
                         }
                     }
                     Label(DurationFormat.string(for: durationSeconds), systemImage: "clock")
@@ -174,15 +151,14 @@ struct DifficultyCard: View {
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
-                .shadow(color: color.opacity(0.10), radius: 8, x: 0, y: 3)
+                .shadow(color: difficulty.color.opacity(0.10), radius: 8, x: 0, y: 3)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(color.opacity(0.25), lineWidth: 1)
+                .strokeBorder(difficulty.color.opacity(0.25), lineWidth: 1)
         )
     }
 
-    /// アレンジの特徴を一目で比較できるよう、固定プロファイルの要点をバッジで並べる
     private var profileBadges: some View {
         HStack(spacing: 6) {
             badge(profile.handInvolvement)
@@ -199,8 +175,8 @@ struct DifficultyCard: View {
             .minimumScaleFactor(0.8)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(color.opacity(0.1))
-            .foregroundStyle(color)
+            .background(difficulty.color.opacity(0.1))
+            .foregroundStyle(difficulty.color)
             .clipShape(Capsule())
     }
 }

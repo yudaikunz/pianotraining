@@ -10,20 +10,7 @@ struct SettingsView: View {
         Form {
             Section {
                 HStack(spacing: 16) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.accentColor.opacity(0.25), Color.accentColor.opacity(0.08)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 60, height: 60)
-                        Image(systemName: "pianokeys")
-                            .font(.system(size: 28, weight: .medium))
-                            .foregroundStyle(Color.accentColor.gradient)
-                    }
+                    TintedIconView(systemName: "pianokeys", color: .accentColor, size: 60, iconSize: 28, cornerRadius: 18)
                     VStack(alignment: .leading, spacing: 4) {
                         Text("ピアノ練習")
                             .font(.headline)

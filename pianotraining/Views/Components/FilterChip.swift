@@ -27,6 +27,7 @@ struct FilterChip: View {
                     }
                 }
                 .foregroundStyle(isSelected ? Color.white : Color.primary)
+                .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isSelected)
         }
         .buttonStyle(.plain)
     }

@@ -49,6 +49,14 @@ enum Difficulty: String, CaseIterable, Identifiable {
         }
     }
 
+    var color: Color {
+        switch self {
+        case .superBeginner: return .green
+        case .beginner:      return .blue
+        case .intermediate:  return .orange
+        }
+    }
+
     /// この難易度で「曲がどのようにアレンジされるか」を表す固定プロファイル（案A）。
     /// 難易度選択画面に表示し、選ぶ前にどんな弾き方になるかが伝わるようにする。
     var profile: DifficultyProfile {
