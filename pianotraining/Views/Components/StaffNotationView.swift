@@ -85,6 +85,7 @@ struct StaffNotationView: View {
             let notesAreaWidth = max(geo.size.width - clefAreaWidth, 100)
             let centerX = notesAreaWidth / 2
             let infos = chordInfos ?? Self.computeChordInfos(for: arrangement.notes)
+            let active = activeNoteIDs
 
             HStack(spacing: 0) {
                 clefs
@@ -104,7 +105,7 @@ struct StaffNotationView: View {
                         noteView(
                             for: note,
                             x: baseX + info.xOffset * scale,
-                            isActive: activeNoteIDs.contains(note.id),
+                            isActive: active.contains(note.id),
                             chordSize: info.size
                         )
                     }
@@ -113,7 +114,6 @@ struct StaffNotationView: View {
                 }
                 .frame(width: notesAreaWidth, height: contentHeight)
                 .clipped()
-                // 停止中のみドラッグで currentBeat をスクロール
                 .gesture(
                     isPlaying ? nil : DragGesture(minimumDistance: 4)
                         .onChanged { value in
@@ -174,16 +174,17 @@ struct StaffNotationView: View {
 
     private func barLines(centerX: CGFloat, areaWidth: CGFloat) -> some View {
         let measureCount = max(Int(ceil(arrangement.totalBeats / arrangement.beatsPerMeasure)), 1)
-        return ForEach(0...measureCount, id: \.self) { measure in
+        let bars: [(id: Int, x: CGFloat, isFinal: Bool)] = (0...measureCount).compactMap { measure in
             let barBeat = Double(measure) * arrangement.beatsPerMeasure
             let x = CGFloat(barBeat - currentBeat) * beatWidth + centerX
-            let isFinal = measure == measureCount
-            if x > -10 && x < areaWidth + 10 {
-                Rectangle()
-                    .fill(Color(.systemGray3))
-                    .frame(width: isFinal ? 2.6 : 1, height: bassBottomY - trebleTopY)
-                    .position(x: x, y: (trebleTopY + bassBottomY) / 2)
-            }
+            guard x > -10 && x < areaWidth + 10 else { return nil }
+            return (measure, x, measure == measureCount)
+        }
+        return ForEach(bars, id: \.id) { bar in
+            Rectangle()
+                .fill(Color(.systemGray3))
+                .frame(width: bar.isFinal ? 2.6 : 1, height: bassBottomY - trebleTopY)
+                .position(x: bar.x, y: (trebleTopY + bassBottomY) / 2)
         }
     }
 

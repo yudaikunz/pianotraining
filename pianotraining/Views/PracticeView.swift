@@ -15,6 +15,7 @@ struct PracticeView: View {
     @State private var currentBeat: Double = 0
     @State private var isPlaying = false
     @State private var soundingNoteIDs: Set<UUID> = []
+    @State private var highlightedKeys: [Int: Hand] = [:]
 
     /// 設定画面で選んだ再生スピード（テンポ倍率）。全曲共通で適用される
     @AppStorage(AppSettings.playbackSpeedKey) private var playbackSpeed = 1.0
@@ -48,20 +49,6 @@ struct PracticeView: View {
         let highestC = (maxPitch / 12 + 1) * 12
         let octaveCount = max(2, (highestC - lowestC) / 12)
         return (lowestC, octaveCount)
-    }
-
-    /// 今鳴っている鍵（MIDIノート番号 → 弾く手）。
-    /// 鍵盤のハイライトを楽譜・落下ノーツと同じ手の色で光らせるために使う。
-    /// 同じ鍵を両手で同時に弾く場合は右手の色を優先する。
-    private var highlightedKeys: [Int: Hand] {
-        var result: [Int: Hand] = [:]
-        for note in arrangement.notes
-        where currentBeat >= note.startBeat && currentBeat < note.startBeat + note.duration {
-            if note.hand == .right || result[note.pitch] == nil {
-                result[note.pitch] = note.hand
-            }
-        }
-        return result
     }
 
     /// iPadなど横幅に余裕がある画面（horizontalSizeClass == .regular）では、
@@ -121,9 +108,18 @@ struct PracticeView: View {
         .navigationTitle("練習")
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear {
-            // 練習画面を離れたらエンジンとオーディオセッションを解放し、
-            // 他アプリの音楽が中断・音量低下されたままにならないようにする
             soundEngine.teardown()
+        }
+        .onChange(of: currentBeat) {
+            guard !isPlaying else { return }
+            var keys: [Int: Hand] = [:]
+            for note in arrangement.notes
+            where currentBeat >= note.startBeat && currentBeat < note.startBeat + note.duration {
+                if note.hand == .right || keys[note.pitch] == nil {
+                    keys[note.pitch] = note.hand
+                }
+            }
+            highlightedKeys = keys
         }
         // playbackSpeedもidに含め、再生中にスピードを変更したらその場でテンポを切り替える
         .task(id: "\(isPlaying)|\(playbackSpeed)") {
@@ -151,8 +147,6 @@ struct PracticeView: View {
 
     // MARK: - 音声再生
 
-    /// 現在の拍位置に応じて、鳴らすべき音を発音し、終わった音を消音する。
-    /// 同じ高さの音が連続/重複する場合に誤って消音しないよう、消音前に他の発音中の音と高さが被っていないか確認する。
     private func updateSound(for beat: Double) {
         let activeNotes = arrangement.notes.filter { beat >= $0.startBeat && beat < $0.startBeat + $0.duration }
         let activeIDs = Set(activeNotes.map(\.id))
@@ -167,11 +161,20 @@ struct PracticeView: View {
             }
         }
         soundingNoteIDs = activeIDs
+
+        var keys: [Int: Hand] = [:]
+        for note in activeNotes {
+            if note.hand == .right || keys[note.pitch] == nil {
+                keys[note.pitch] = note.hand
+            }
+        }
+        highlightedKeys = keys
     }
 
     private func stopAllSound() {
         soundEngine.stopAllNotes()
         soundingNoteIDs = []
+        highlightedKeys = [:]
     }
 
     // MARK: - 共通ヘッダー

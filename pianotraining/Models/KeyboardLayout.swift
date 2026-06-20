@@ -18,47 +18,53 @@ struct KeyboardLayout {
     var blackKeyWidth: CGFloat { whiteKeyWidth * 0.6 }
     var blackKeyHeight: CGFloat { keyboardHeight * 0.6 }
 
-    var whiteKeyPitches: [Int] {
-        var result: [Int] = []
+    let whiteKeyPitches: [Int]
+    let blackKeyPitches: [(pitch: Int, whiteIndexBefore: Int)]
+    private let centerXCache: [Int: CGFloat]
+
+    init(lowestPitch: Int, octaveCount: Int, width: CGFloat, keyboardHeight: CGFloat) {
+        self.lowestPitch = lowestPitch
+        self.octaveCount = octaveCount
+        self.width = width
+        self.keyboardHeight = keyboardHeight
+
+        let whiteKeyCount = octaveCount * 7 + 1
+        let whiteKeyWidth = width / CGFloat(whiteKeyCount)
+
+        var whites: [Int] = []
         for octave in 0..<octaveCount {
             for offset in Self.whiteOffsets {
-                result.append(lowestPitch + octave * 12 + offset)
+                whites.append(lowestPitch + octave * 12 + offset)
             }
         }
-        result.append(lowestPitch + octaveCount * 12)
-        return result
-    }
+        whites.append(lowestPitch + octaveCount * 12)
+        self.whiteKeyPitches = whites
 
-    var blackKeyPitches: [(pitch: Int, whiteIndexBefore: Int)] {
-        var result: [(Int, Int)] = []
+        var blacks: [(Int, Int)] = []
         for octave in 0..<octaveCount {
             for entry in Self.blackOffsets {
                 let pitch = lowestPitch + octave * 12 + entry.offset
                 guard let whiteIndex = Self.whiteOffsets.firstIndex(of: entry.afterWhiteOffset) else { continue }
-                result.append((pitch, octave * 7 + whiteIndex))
+                blacks.append((pitch, octave * 7 + whiteIndex))
             }
         }
-        return result
+        self.blackKeyPitches = blacks
+
+        var cache: [Int: CGFloat] = [:]
+        cache.reserveCapacity(whites.count + blacks.count)
+        for (i, pitch) in whites.enumerated() {
+            cache[pitch] = (CGFloat(i) + 0.5) * whiteKeyWidth
+        }
+        for entry in blacks {
+            cache[entry.0] = CGFloat(entry.1 + 1) * whiteKeyWidth
+        }
+        self.centerXCache = cache
     }
 
-    /// 指定したMIDIノート番号の鍵盤上での中心x座標
     func centerX(for pitch: Int) -> CGFloat {
-        let pitchClass = ((pitch - lowestPitch) % 12 + 12) % 12
-        let octave = (pitch - lowestPitch - pitchClass) / 12
-
-        if let whiteOffsetIndex = Self.whiteOffsets.firstIndex(of: pitchClass) {
-            let whiteIndex = octave * 7 + whiteOffsetIndex
-            return (CGFloat(whiteIndex) + 0.5) * whiteKeyWidth
-        }
-        if let entry = Self.blackOffsets.first(where: { $0.offset == pitchClass }),
-           let whiteOffsetIndex = Self.whiteOffsets.firstIndex(of: entry.afterWhiteOffset) {
-            let whiteIndex = octave * 7 + whiteOffsetIndex
-            return CGFloat(whiteIndex + 1) * whiteKeyWidth
-        }
-        return width / 2
+        centerXCache[pitch] ?? width / 2
     }
 
-    /// 指定した音が白鍵かどうか
     func isWhiteKey(_ pitch: Int) -> Bool {
         let pitchClass = ((pitch - lowestPitch) % 12 + 12) % 12
         return Self.whiteOffsets.contains(pitchClass)
