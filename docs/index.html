@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サポート｜Piano Training</title>
+<meta name="description" content="Piano Training（ピアノ練習アプリ）のサポートページ。よくある質問・トラブルシューティング・お問い合わせ。">
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73;
+    --accent:#4f3cc9; --accent-soft:#ece9fb; --line:#e3e3e8;
+    --radius:18px; --maxw:760px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+    line-height:1.85; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px 64px;}
+  header.hero{
+    background:linear-gradient(135deg,#3a2e9e,#6a4ee0); color:#fff;
+    padding:56px 20px 44px; text-align:center;
+  }
+  .hero .badge-app{
+    display:inline-flex; align-items:center; gap:10px; font-weight:700;
+    letter-spacing:.02em; opacity:.95; margin-bottom:14px; font-size:.95rem;
+  }
+  .hero .keys{font-size:1.4rem;}
+  .hero h1{margin:.1em 0 .15em; font-size:1.9rem;}
+  .hero p{margin:0; opacity:.85; font-size:.95rem;}
+  .intro{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px; margin:-30px auto 30px; max-width:var(--maxw);
+    box-shadow:0 10px 30px rgba(40,30,120,.08);
+  }
+  .intro p{margin:0; color:#33333a;}
+  section{margin-top:34px;}
+  h2.sec{font-size:1.2rem; margin:0 0 .6em; display:flex; align-items:center; gap:.5em;}
+  h2.sec .ic{font-size:1.15em;}
+  .features{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media(max-width:520px){.features{grid-template-columns:1fr;}}
+  .feature{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; font-size:.93rem;
+  }
+  .feature b{display:block; margin-bottom:2px;}
+  .feature span{color:var(--muted); font-size:.86rem;}
+  details.faq{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:4px 18px; margin-bottom:10px;
+  }
+  details.faq summary{
+    cursor:pointer; font-weight:600; padding:14px 0; list-style:none;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  details.faq summary::-webkit-details-marker{display:none;}
+  details.faq summary::after{content:"＋"; color:var(--accent); font-weight:700;}
+  details.faq[open] summary::after{content:"−";}
+  details.faq .ans{padding:0 0 16px; color:#33333a;}
+  .env{
+    background:var(--accent-soft); border-radius:14px; padding:16px 18px;
+    color:#2a2150; font-size:.92rem;
+  }
+  .contact{
+    margin-top:18px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:22px 24px;
+  }
+  .contact a{color:var(--accent); text-decoration:none; font-weight:600;}
+  footer{margin-top:44px; text-align:center; color:var(--muted); font-size:.84rem;}
+  footer a{color:var(--accent); text-decoration:none;}
+  hr.div{border:none; border-top:1px solid var(--line); margin:34px 0 0;}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="badge-app"><span class="keys">🎹</span> Piano Training</div>
+  <h1>サポート</h1>
+  <p>名曲で楽しむ、ピアノ練習アプリ</p>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <p>Piano Training をご利用いただきありがとうございます。ご不明な点は、まず下記のよくある質問をご確認ください。解決しない場合は、お気軽にお問い合わせください。</p>
+  </div>
+
+  <section>
+    <h2 class="sec"><span class="ic">✨</span>主な機能</h2>
+    <div class="features">
+      <div class="feature"><b>名曲を収録</b><span>クラシック・童謡などパブリックドメインの30曲</span></div>
+      <div class="feature"><b>難易度選択</b><span>曲ごとにレベルを選んで練習</span></div>
+      <div class="feature"><b>検索・絞り込み</b><span>曲名・作曲家・時代から探せる</span></div>
+      <div class="feature"><b>テーマ設定</b><span>ライト／ダーク／システムに対応</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="ic">❓</span>よくある質問</h2>
+
+    <details class="faq" open>
+      <summary>音が出ません</summary>
+      <div class="ans">端末がマナーモード（消音スイッチ）になっていないかご確認ください。あわせて、本体の音量を上げてお試しください。それでも改善しない場合は、アプリを一度終了して再起動してください。</div>
+    </details>
+
+    <details class="faq">
+      <summary>インターネット接続は必要ですか？</summary>
+      <div class="ans">必要ありません。Piano Training はすべての機能がオフラインで動作します。通信を行わないため、機内モードでもご利用いただけます。</div>
+    </details>
+
+    <details class="faq">
+      <summary>収録曲を増やすことはできますか？</summary>
+      <div class="ans">現在は30曲を収録しています。今後のアップデートで曲の追加を検討しています。ご要望の曲があればお問い合わせからお寄せください。</div>
+    </details>
+
+    <details class="faq">
+      <summary>楽譜や音源の著作権は大丈夫ですか？</summary>
+      <div class="ans">収録している楽曲はすべて著作権保護期間が満了したパブリックドメインの作品です。音源もライセンスに基づき適切に使用しています。</div>
+    </details>
+
+    <details class="faq">
+      <summary>個人情報は収集されますか？</summary>
+      <div class="ans">いいえ。本アプリは個人情報・利用データを一切収集しません。詳しくは<a href="privacy.html" style="color:var(--accent);">プライバシーポリシー</a>をご覧ください。</div>
+    </details>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="ic">📱</span>動作環境</h2>
+    <div class="env">対応OS：iOS 26.5 以降 ／ 対応端末：iPhone・iPad</div>
+  </section>
+
+  <div class="contact">
+    <h2 class="sec" style="margin-bottom:.3em;"><span class="ic">✉️</span>お問い合わせ</h2>
+    <p style="margin:.2em 0 0; color:#33333a;">上記で解決しない場合は、下記までご連絡ください。通常2〜3営業日以内に返信します。<br>
+    メール：<a href="mailto:yudaikunz@gmail.com">yudaikunz@gmail.com</a></p>
+  </div>
+
+  <hr class="div">
+  <footer>
+    <p>Piano Training ・ <a href="privacy.html">プライバシーポリシー</a><br>
+    © 2026 Yudai Yazawa</p>
+  </footer>
+</div>
+</body>
+</html>
